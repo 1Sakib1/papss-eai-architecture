@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PaymentInstructionService"
+             targetNamespace="http://papss.org/wsdl/payment"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://papss.org/wsdl/payment"
+             xmlns:pay="http://papss.org/schema/payment/v1"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Types imported from the Task 3 schema, not redefined here -->
+  <types>
+    <xsd:schema targetNamespace="http://papss.org/schema/payment/v1">
+      <xsd:import namespace="http://papss.org/schema/payment/v1"
+                  schemaLocation="PaymentInstruction.xsd"/>
+    </xsd:schema>
+  </types>
+
+  <message name="SubmitPaymentRequest">
+    <part name="body" element="pay:PaymentInstruction"/>
+  </message>
+
+  <message name="SubmitPaymentResponse">
+    <part name="body" element="pay:PaymentAcknowledgement"/>
+  </message>
+
+  <message name="PaymentFaultMessage">
+    <part name="body" element="pay:PaymentFault"/>
+  </message>
+
+  <portType name="PaymentInstructionPortType">
+    <operation name="SubmitPaymentInstruction">
+      <input   message="tns:SubmitPaymentRequest"/>
+      <output  message="tns:SubmitPaymentResponse"/>
+      <fault name="InvalidAccountDetails"       message="tns:PaymentFaultMessage"/>
+      <fault name="DuplicatePaymentInstruction" message="tns:PaymentFaultMessage"/>
+      <fault name="SchemaValidationFault"       message="tns:PaymentFaultMessage"/>
+      <fault name="InsufficientPreFunding"      message="tns:PaymentFaultMessage"/>
+    </operation>
+  </portType>
+
+  <binding name="PaymentInstructionSOAPBinding"
+           type="tns:PaymentInstructionPortType">
+    <soap:binding style="document"
+                  transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="SubmitPaymentInstruction">
+      <soap:operation soapAction="http://papss.org/payment/Submit"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+      <fault name="InvalidAccountDetails">
+        <soap:fault name="InvalidAccountDetails" use="literal"/>
+      </fault>
+      <fault name="DuplicatePaymentInstruction">
+        <soap:fault name="DuplicatePaymentInstruction" use="literal"/>
+      </fault>
+      <fault name="SchemaValidationFault">
+        <soap:fault name="SchemaValidationFault" use="literal"/>
+      </fault>
+      <fault name="InsufficientPreFunding">
+        <soap:fault name="InsufficientPreFunding" use="literal"/>
+      </fault>
+    </operation>
+  </binding>
+
+  <service name="PaymentInstructionService">
+    <port name="PaymentInstructionPort"
+          binding="tns:PaymentInstructionSOAPBinding">
+      <soap:address location="https://api.papss.org/v1/payment"/>
+    </port>
+  </service>
+
+</definitions>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://papss.org/schema/common/v1"
+            xmlns:cmn="http://papss.org/schema/common/v1"
+            elementFormDefault="qualified">
+
+  <!-- Version-4 UUID (UETR) pattern -->
+  <xsd:simpleType name="UETRType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- ISO 9362 BIC pattern (8 or 11 characters) -->
+  <xsd:simpleType name="BICType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Registered PAPSS settlement currencies -->
+  <xsd:simpleType name="CurrencyCodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="GHS"/>
+      <xsd:enumeration value="NGN"/>
+      <xsd:enumeration value="USD"/>
+      <xsd:enumeration value="KES"/>
+      <xsd:enumeration value="ZAR"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Positive amount (>= 0.01) -->
+  <xsd:simpleType name="AmountValueType">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="0.01"/>
+      <xsd:totalDigits value="18"/>
+      <xsd:fractionDigits value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Currency-qualified amount -->
+  <xsd:complexType name="AmountType">
+    <xsd:simpleContent>
+      <xsd:extension base="cmn:AmountValueType">
+        <xsd:attribute name="Ccy" type="cmn:CurrencyCodeType" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!-- Non-negative amount for gross postings -->
+  <xsd:complexType name="NonNegativeAmountType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:decimal">
+        <xsd:minInclusive value="0.00"/>
+        <xsd:totalDigits value="18"/>
+        <xsd:fractionDigits value="2"/>
+        <xsd:attribute name="Ccy" type="cmn:CurrencyCodeType" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!-- Signed amount for net settlement positions -->
+  <xsd:complexType name="SignedAmountType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:decimal">
+        <xsd:totalDigits value="18"/>
+        <xsd:fractionDigits value="2"/>
+        <xsd:attribute name="Ccy" type="cmn:CurrencyCodeType" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!-- Generic references -->
+  <xsd:simpleType name="ReferenceType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="35"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="NameType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="140"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Country ISO 3166-1 alpha-2 -->
+  <xsd:simpleType name="CountryCodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z]{2}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Party identification -->
+  <xsd:complexType name="PartyType">
+    <xsd:sequence>
+      <xsd:element name="Name" type="cmn:NameType"/>
+      <xsd:element name="Account" type="xsd:string"/>
+      <xsd:element name="Country" type="cmn:CountryCodeType"/>
+      <xsd:element name="Address" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Financial Institution Agent -->
+  <xsd:complexType name="AgentType">
+    <xsd:sequence>
+      <xsd:element name="BICFI" type="cmn:BICType"/>
+      <xsd:element name="Name" type="cmn:NameType" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Charge bearer enumeration -->
+  <xsd:simpleType name="ChargeBearerType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="DEBT"/>
+      <xsd:enumeration value="CRED"/>
+      <xsd:enumeration value="SHAR"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- FX Rate definition -->
+  <xsd:simpleType name="FxRateType">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minExclusive value="0"/>
+      <xsd:fractionDigits value="6"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

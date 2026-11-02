@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://papss.org/schema/payment/v1"
+            xmlns:pay="http://papss.org/schema/payment/v1"
+            xmlns:cmn="http://papss.org/schema/common/v1"
+            elementFormDefault="qualified">
+
+  <xsd:import namespace="http://papss.org/schema/common/v1"
+              schemaLocation="PapssCommonTypes.xsd"/>
+
+  <!-- Root: PaymentInstruction -->
+  <xsd:element name="PaymentInstruction" type="pay:PaymentInstructionType">
+    <xsd:unique name="UniquePaymentId">
+      <xsd:selector xpath="pay:CreditTransferTransaction"/>
+      <xsd:field xpath="pay:PaymentId"/>
+    </xsd:unique>
+  </xsd:element>
+
+  <xsd:complexType name="PaymentInstructionType">
+    <xsd:sequence>
+      <xsd:element name="GroupHeader" type="pay:GroupHeaderType"/>
+      <xsd:element name="CreditTransferTransaction"
+                   type="pay:CreditTransferTransactionType"
+                   minOccurs="1" maxOccurs="100"/>
+    </xsd:sequence>
+    <xsd:attribute name="SchemaVersion" type="xsd:string" use="required" fixed="1.0"/>
+  </xsd:complexType>
+
+  <!-- Group Header -->
+  <xsd:complexType name="GroupHeaderType">
+    <xsd:sequence>
+      <xsd:element name="MessageId" type="cmn:ReferenceType"/>
+      <xsd:element name="CreationDateTime" type="xsd:dateTime"/>
+      <xsd:element name="NumberOfTransactions" type="xsd:positiveInteger"/>
+      <xsd:element name="InstructingAgent" type="cmn:AgentType"/>
+      <xsd:element name="InstructedAgent" type="cmn:AgentType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Purpose Code Enumeration -->
+  <xsd:simpleType name="PurposeCodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="GDDS"/>
+      <xsd:enumeration value="SERV"/>
+      <xsd:enumeration value="SALS"/>
+      <xsd:enumeration value="INVT"/>
+      <xsd:enumeration value="OTHR"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Credit Transfer Transaction -->
+  <xsd:complexType name="CreditTransferTransactionType">
+    <xsd:sequence>
+      <xsd:element name="PaymentId" type="cmn:UETRType"/>
+      <xsd:element name="EndToEndId" type="cmn:ReferenceType"/>
+      <xsd:element name="InstructedAmount" type="cmn:AmountType"/>
+      <xsd:element name="SettlementCurrency" type="cmn:CurrencyCodeType"/>
+      <xsd:element name="FxQuoteReference" type="cmn:ReferenceType" minOccurs="0"/>
+      <xsd:element name="FxRate" type="cmn:FxRateType" minOccurs="0"/>
+      <xsd:element name="RequestedExecutionDate" type="xsd:date"/>
+      <xsd:element name="ChargeBearer" type="cmn:ChargeBearerType"/>
+      <xsd:element name="PurposeCode" type="pay:PurposeCodeType"/>
+      <xsd:element name="Debtor" type="cmn:PartyType"/>
+      <xsd:element name="DebtorAgent" type="cmn:AgentType"/>
+      <xsd:element name="Creditor" type="cmn:PartyType"/>
+      <xsd:element name="CreditorAgent" type="cmn:AgentType"/>
+      <xsd:element name="RemittanceInformation" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="SponsorId" type="cmn:BICType" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Root: PaymentAcknowledgement -->
+  <xsd:element name="PaymentAcknowledgement" type="pay:PaymentAcknowledgementType"/>
+
+  <xsd:complexType name="PaymentAcknowledgementType">
+    <xsd:sequence>
+      <xsd:element name="PaymentId" type="cmn:UETRType"/>
+      <xsd:element name="ClearingReference" type="cmn:ReferenceType"/>
+      <xsd:element name="AcceptanceStatus">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ACTC"/>
+            <xsd:enumeration value="RJCT"/>
+            <xsd:enumeration value="PDNG"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="ValidationStatus">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PASS"/>
+            <xsd:enumeration value="PENDING"/>
+            <xsd:enumeration value="FAIL"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="ReceivedTimestamp" type="xsd:dateTime"/>
+      <xsd:element name="RejectReasonCode" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Root: PaymentFault -->
+  <xsd:element name="PaymentFault" type="pay:PaymentFaultType"/>
+
+  <xsd:complexType name="PaymentFaultType">
+    <xsd:sequence>
+      <xsd:element name="faultCode" type="xsd:string"/>
+      <xsd:element name="faultCategory">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="BUSINESS"/>
+            <xsd:enumeration value="TECHNICAL"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="paymentId" type="cmn:UETRType"/>
+      <xsd:element name="clearingReference" type="cmn:ReferenceType"/>
+      <xsd:element name="participantId" type="cmn:BICType"/>
+      <xsd:element name="settlementCurrency" type="cmn:CurrencyCodeType"/>
+      <xsd:element name="requestedAmount" type="cmn:AmountValueType"/>
+      <xsd:element name="availableBalance" type="xsd:decimal"/>
+      <xsd:element name="shortfall" type="xsd:decimal"/>
+      <xsd:element name="recoveryAction" type="xsd:string"/>
+      <xsd:element name="retryAfter" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="escalationLevel" type="xsd:string"/>
+      <xsd:element name="faultTimestamp" type="xsd:dateTime"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,353 @@
+[
+  {
+    "type": "paragraph",
+    "text": "Task 3: XML Schema Design"
+  },
+  {
+    "type": "paragraph",
+    "text": "Nov 2, 2026 · @Sakib"
+  },
+  {
+    "type": "paragraph",
+    "text": "Three XSDs define every message the Task 2 services exchange: a shared common-types schema imported by a Payment Instruction schema and a Net Settlement schema. Both sample documents validate against their schemas, and a deliberately malformed instruction is rejected at the API Gateway with four specific errors rather than failing later inside the orchestration."
+  },
+  {
+    "type": "paragraph",
+    "text": "Schema architecture and reuse"
+  },
+  {
+    "type": "paragraph",
+    "text": "The design uses three schemas rather than two. The types shared between messages — a BIC, a currency, an amount, a status code — are defined once in a common library and imported, so tightening the BIC pattern changes one file instead of being edited separately in every message schema and drifting out of step."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Schema",
+        "Target namespace",
+        "Root elements",
+        "Used by"
+      ],
+      [
+        "PapssCommonTypes.xsd",
+        "…/common/v1",
+        "none — a type library",
+        "Imported by both message schemas"
+      ],
+      [
+        "PaymentInstruction.xsd",
+        "…/payment/v1",
+        "PaymentInstruction ,  PaymentAcknowledgement ,  PaymentFault",
+        "WS-01, WS-02"
+      ],
+      [
+        "NetSettlementInstruction.xsd",
+        "…/settlement/v1",
+        "NetSettlementInstruction ,  SettlementConfirmation",
+        "WS-05"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "The three root elements of PaymentInstruction.xsd are exactly the three WSDL message parts declared in Task 2, so the service contract and the schema cannot drift apart: the WSDL <types> section imports this file rather than redefining anything."
+  },
+  {
+    "type": "paragraph",
+    "text": "<!-- PapssCommonTypes.xsd — the reusable types, abridged --><xsd:simpleType name=\"UETRType\">  <xsd:restriction base=\"xsd:string\">    <xsd:pattern value=\"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\"/>  </xsd:restriction></xsd:simpleType><xsd:simpleType name=\"BICType\">  <xsd:restriction base=\"xsd:string\">    <xsd:pattern value=\"[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?\"/>  </xsd:restriction></xsd:simpleType><!-- A closed list, not a free ISO 4217 pattern: an unregistered     currency is refused at the gateway, not deep in Pre-Funding Management --><xsd:simpleType name=\"CurrencyCodeType\">  <xsd:restriction base=\"xsd:string\">    <xsd:enumeration value=\"GHS\"/>    <xsd:enumeration value=\"NGN\"/>    <xsd:enumeration value=\"USD\"/>    <xsd:enumeration value=\"KES\"/>    <xsd:enumeration value=\"ZAR\"/>  </xsd:restriction></xsd:simpleType><xsd:simpleType name=\"AmountValueType\">  <xsd:restriction base=\"xsd:decimal\">    <xsd:minInclusive value=\"0.01\"/>    <xsd:totalDigits value=\"18\"/>    <xsd:fractionDigits value=\"2\"/>  </xsd:restriction></xsd:simpleType><!-- Currency travels with the figure, so an amount can never be read     in the wrong currency by a downstream participant --><xsd:complexType name=\"AmountType\">  <xsd:simpleContent>    <xsd:extension base=\"cmn:AmountValueType\">      <xsd:attribute name=\"Ccy\" type=\"cmn:CurrencyCodeType\" use=\"required\"/>    </xsd:extension>  </xsd:simpleContent></xsd:complexType>"
+  },
+  {
+    "type": "paragraph",
+    "text": "Three amount types are defined rather than one, because the three uses have genuinely different valid ranges: AmountType must be at least 0.01, since a payment of nothing is a defect; NonNegativeAmountType allows zero, because a participant can legitimately post no debits in a cycle; and SignedAmountType allows negative values, because a net settlement position is a debit or a credit. Collapsing them into one type would mean the schema could no longer reject a zero-value payment."
+  },
+  {
+    "type": "paragraph",
+    "text": "Two further decisions apply to all three schemas. elementFormDefault=\"qualified\" makes every element carry its namespace, so a PaymentId in a payment message stays distinguishable from any same-named element in a settlement message as both pass through the shared ESB. A SchemaVersion attribute fixed=\"1.0\" on each root element means a participant still running an older adapter is rejected at the gateway with an explicit version error, instead of silently sending a message the hub parses differently from the way the sender meant it."
+  },
+  {
+    "type": "paragraph",
+    "text": "Payment Instruction schema"
+  },
+  {
+    "type": "paragraph",
+    "text": "PaymentInstruction.xsd carries the WS-01 request as a group header plus one to one hundred credit transfer transactions, so a single payment and a small batch share one structure."
+  },
+  {
+    "type": "paragraph",
+    "text": "<xsd:element name=\"PaymentInstruction\" type=\"pay:PaymentInstructionType\">  <!-- A payment may appear only once in a batch -->  <xsd:unique name=\"UniquePaymentId\">    <xsd:selector xpath=\"pay:CreditTransferTransaction\"/>    <xsd:field xpath=\"pay:PaymentId\"/>  </xsd:unique></xsd:element><xsd:complexType name=\"PaymentInstructionType\">  <xsd:sequence>    <xsd:element name=\"GroupHeader\" type=\"pay:GroupHeaderType\"/>    <xsd:element name=\"CreditTransferTransaction\"                 type=\"pay:CreditTransferTransactionType\"                 minOccurs=\"1\" maxOccurs=\"100\"/>  </xsd:sequence>  <xsd:attribute name=\"SchemaVersion\" type=\"xsd:string\"                 use=\"required\" fixed=\"1.0\"/></xsd:complexType><xsd:complexType name=\"CreditTransferTransactionType\">  <xsd:sequence>    <xsd:element name=\"PaymentId\"              type=\"cmn:UETRType\"/>    <xsd:element name=\"EndToEndId\"             type=\"cmn:ReferenceType\"/>    <xsd:element name=\"InstructedAmount\"       type=\"cmn:AmountType\"/>    <xsd:element name=\"SettlementCurrency\"     type=\"cmn:CurrencyCodeType\"/>    <xsd:element name=\"FxQuoteReference\"       type=\"cmn:ReferenceType\" minOccurs=\"0\"/>    <xsd:element name=\"FxRate\"                 type=\"cmn:FxRateType\"    minOccurs=\"0\"/>    <xsd:element name=\"RequestedExecutionDate\" type=\"xsd:date\"/>    <xsd:element name=\"ChargeBearer\"           type=\"cmn:ChargeBearerType\"/>    <xsd:element name=\"PurposeCode\"            type=\"pay:PurposeCodeType\"/>    <xsd:element name=\"Debtor\"                 type=\"cmn:PartyType\"/>    <xsd:element name=\"DebtorAgent\"            type=\"cmn:AgentType\"/>    <xsd:element name=\"Creditor\"               type=\"cmn:PartyType\"/>    <xsd:element name=\"CreditorAgent\"          type=\"cmn:AgentType\"/>    <xsd:element name=\"RemittanceInformation\"  type=\"pay:RemittanceType\" minOccurs=\"0\"/>    <xsd:element name=\"SponsorId\"              type=\"cmn:BICType\"        minOccurs=\"0\"/>  </xsd:sequence></xsd:complexType>"
+  },
+  {
+    "type": "paragraph",
+    "text": "Every constraint is chosen against a failure it prevents, not applied by habit."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Element",
+        "Occurrence",
+        "Constraint",
+        "What it prevents"
+      ],
+      [
+        "CreditTransferTransaction",
+        "1..100",
+        "maxOccurs=\"100\"",
+        "One oversized batch stalling the ESB for every other participant"
+      ],
+      [
+        "PaymentId",
+        "1",
+        "Version-4 UUID pattern;  xsd:unique  across the batch",
+        "A malformed or repeated identifier defeating the duplicate check in WS-01 and causing a second debit"
+      ],
+      [
+        "InstructedAmount",
+        "1",
+        "≥ 0.01, 18 total digits, 2 fraction digits,  Ccy  required",
+        "Zero-value payments, and three-decimal rounding errors reaching the clearing ledger"
+      ],
+      [
+        "SettlementCurrency",
+        "1",
+        "Enumeration of five currencies",
+        "A currency with no pre-funding account being accepted and failing later at  Check Funds"
+      ],
+      [
+        "FxQuoteReference",
+        "0..1",
+        "1–35 characters",
+        "— optional, present only for cross-currency payments"
+      ],
+      [
+        "FxRate",
+        "0..1",
+        "> 0, 6 fraction digits",
+        "Two banks computing different converted amounts from the same rate"
+      ],
+      [
+        "RequestedExecutionDate",
+        "1",
+        "xsd:date",
+        "YYYYMMDD  against  DD/MM/YYYY  ambiguity between the Ghanaian and Nigerian core systems"
+      ],
+      [
+        "ChargeBearer",
+        "1",
+        "DEBT / CRED / SHAR",
+        "Charge allocation being left to each bank's interpretation"
+      ],
+      [
+        "PurposeCode",
+        "1",
+        "Five enumerated codes",
+        "A payment arriving without the classification central bank reporting requires"
+      ],
+      [
+        "Debtor ,  Creditor",
+        "1 each",
+        "Name, Account and Country mandatory; Address optional",
+        "A party reaching sanctions screening in WS-02 without the name and country it screens on"
+      ],
+      [
+        "SponsorId",
+        "0..1",
+        "BIC pattern",
+        "— optional, present only for a sponsored indirect participant"
+      ],
+      [
+        "SchemaVersion",
+        "required attribute",
+        "fixed=\"1.0\"",
+        "An outdated adapter sending a message the hub parses differently from the way the sender meant it"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "The same schema defines PaymentAcknowledgement, the payment status message returned by WS-01, and PaymentFault, the fault detail shown in Task 2."
+  },
+  {
+    "type": "paragraph",
+    "text": "One limitation is worth stating. RejectReasonCode is optional because it should appear only when AcceptanceStatus is RJCT, but XSD 1.0 cannot express a conditional dependency between two sibling elements — that would need an XSD 1.1 xsd:assert, which many enterprise parsers still do not support. The rule is therefore enforced in the Business Rules component rather than in the schema. Stating this matters: a schema that appears to guarantee a rule it cannot enforce is more dangerous than one whose boundary is documented."
+  },
+  {
+    "type": "paragraph",
+    "text": "Net Settlement schema"
+  },
+  {
+    "type": "paragraph",
+    "text": "NetSettlementInstruction.xsd carries the WS-05 end-of-day multilateral position. Its shape differs from the payment schema in one way that matters: it is a collection rather than a single transaction, so most of its constraints govern occurrence and uniqueness rather than format."
+  },
+  {
+    "type": "paragraph",
+    "text": "<xsd:element name=\"NetSettlementInstruction\"             type=\"stl:NetSettlementInstructionType\">  <!-- A participant may hold only one position per settlement cycle -->  <xsd:unique name=\"UniqueParticipant\">    <xsd:selector xpath=\"stl:ParticipantPositions/stl:ParticipantPosition\"/>    <xsd:field xpath=\"stl:ParticipantId\"/>  </xsd:unique></xsd:element><xsd:complexType name=\"ParticipantPositionsType\">  <xsd:sequence>    <!-- A netting cycle requires at least two participants -->    <xsd:element name=\"ParticipantPosition\"                 type=\"stl:ParticipantPositionType\"                 minOccurs=\"2\" maxOccurs=\"unbounded\"/>  </xsd:sequence></xsd:complexType><xsd:complexType name=\"ParticipantPositionType\">  <xsd:sequence>    <xsd:element name=\"ParticipantId\"    type=\"cmn:BICType\"/>    <xsd:element name=\"ParticipantName\"  type=\"cmn:NameType\"/>    <xsd:element name=\"ParticipantRole\"  type=\"stl:ParticipantRoleType\"/>    <xsd:element name=\"SponsorId\"        type=\"cmn:BICType\" minOccurs=\"0\"/>    <xsd:element name=\"GrossDebits\"      type=\"cmn:NonNegativeAmountType\"/>    <xsd:element name=\"GrossCredits\"     type=\"cmn:NonNegativeAmountType\"/>    <xsd:element name=\"NetAmount\"        type=\"cmn:SignedAmountType\"/>    <xsd:element name=\"TransactionCount\" type=\"xsd:nonNegativeInteger\"/>  </xsd:sequence></xsd:complexType><!-- Dual control: exactly two authorising officers --><xsd:element name=\"AuthorisedBy\" type=\"cmn:NameType\"             minOccurs=\"2\" maxOccurs=\"2\"/>"
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Element",
+        "Occurrence",
+        "Constraint",
+        "What it prevents"
+      ],
+      [
+        "ParticipantPosition",
+        "2..unbounded",
+        "minOccurs=\"2\"",
+        "A cycle with one participant, which has nothing to net against"
+      ],
+      [
+        "ParticipantId",
+        "1 per position",
+        "xsd:unique  across the cycle",
+        "One bank appearing twice and being double-counted in the net total"
+      ],
+      [
+        "CycleId",
+        "1",
+        "Pattern  PAPSS-CYCLE-YYYY-MM-DD",
+        "A free-text cycle reference that Audit & Reconciliation cannot match against its ledger"
+      ],
+      [
+        "RtgsSystemId",
+        "1",
+        "BOG-RTGS / CBN-RTGS / AFREXIM",
+        "A settlement instruction routed to an endpoint that is not a settlement system"
+      ],
+      [
+        "GrossDebits ,  GrossCredits",
+        "1 each",
+        "≥ 0,  Ccy  required",
+        "A negative gross total, which is an arithmetic defect rather than a position"
+      ],
+      [
+        "NetAmount",
+        "1",
+        "Signed, 2 fraction digits",
+        "— a debit position is legitimately negative, so this type must permit it"
+      ],
+      [
+        "TransactionCount",
+        "1",
+        "xsd:nonNegativeInteger",
+        "A negative transaction count passing as valid"
+      ],
+      [
+        "AuthorisedBy",
+        "exactly 2",
+        "minOccurs=\"2\" maxOccurs=\"2\"",
+        "A settlement instruction released on one person's authority alone"
+      ],
+      [
+        "ParticipantRole",
+        "1",
+        "DIRECT / INDIRECT_SPONSORED / SETTLEMENT_AGENT",
+        "— identifies how the position settles"
+      ],
+      [
+        "SponsorId",
+        "0..1",
+        "BIC pattern",
+        "— present only for a sponsored indirect participant"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "As with the payment schema, one rule sits outside what XSD 1.0 can express. TotalNetAmount must equal the sum of every NetAmount and must come to zero for a balanced cycle, but that is arithmetic across repeating elements, which requires XSD 1.1 assertions. Settlement Orchestration performs the check before dispatch, and a failure raises the SettlementMismatch fault specified in Task 2. The schema guarantees that each figure is well formed and that no participant is counted twice; the business layer guarantees that the figures add up."
+  },
+  {
+    "type": "paragraph",
+    "text": "Validated sample documents"
+  },
+  {
+    "type": "paragraph",
+    "text": "The first sample is the Roffi Trading Ltd payment used throughout Task 2: GHS 250,000.00 from Ecobank Ghana to Legos Corp at Alt Bank Nigeria, settling in NGN."
+  },
+  {
+    "type": "paragraph",
+    "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><pay:PaymentInstruction    xmlns:pay=\"http://papss.org/schema/payment/v1\"    xmlns:cmn=\"http://papss.org/schema/common/v1\"    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"    xsi:schemaLocation=\"http://papss.org/schema/payment/v1 PaymentInstruction.xsd\"    SchemaVersion=\"1.0\">  <pay:GroupHeader>    <pay:MessageId>PAPSS-MSG-2026-10-15-000412</pay:MessageId>    <pay:CreationDateTime>2026-10-15T09:41:58Z</pay:CreationDateTime>    <pay:NumberOfTransactions>1</pay:NumberOfTransactions>    <pay:InstructingAgent>      <cmn:BICFI>ECOCGHAC</cmn:BICFI>      <cmn:Name>Ecobank Ghana Limited</cmn:Name>    </pay:InstructingAgent>    <pay:InstructedAgent>      <cmn:BICFI>ALTBNGLA</cmn:BICFI>      <cmn:Name>Alt Bank Nigeria</cmn:Name>    </pay:InstructedAgent>  </pay:GroupHeader>  <pay:CreditTransferTransaction>    <pay:PaymentId>8f3c1b2a-77d4-4e19-9a52-0b6c1d3e4f58</pay:PaymentId>    <pay:EndToEndId>ROFFI-INV-2026-0881</pay:EndToEndId>    <pay:InstructedAmount Ccy=\"GHS\">250000.00</pay:InstructedAmount>    <pay:SettlementCurrency>NGN</pay:SettlementCurrency>    <pay:FxQuoteReference>FXQ-GHS-NGN-20261015-0042</pay:FxQuoteReference>    <pay:FxRate>24.871500</pay:FxRate>    <pay:RequestedExecutionDate>2026-10-15</pay:RequestedExecutionDate>    <pay:ChargeBearer>SHAR</pay:ChargeBearer>    <pay:PurposeCode>GDDS</pay:PurposeCode>    <pay:Debtor>      <cmn:Name>Roffi Trading Ltd</cmn:Name>      <cmn:Account>0124558877001</cmn:Account>      <cmn:Country>GH</cmn:Country>      <cmn:Address>14 Ring Road East, Accra</cmn:Address>    </pay:Debtor>    <pay:DebtorAgent>      <cmn:BICFI>ECOCGHAC</cmn:BICFI>    </pay:DebtorAgent>    <pay:Creditor>      <cmn:Name>Legos Corp</cmn:Name>      <cmn:Account>3081447729</cmn:Account>      <cmn:Country>NG</cmn:Country>    </pay:Creditor>    <pay:CreditorAgent>      <cmn:BICFI>ALTBNGLA</cmn:BICFI>    </pay:CreditorAgent>    <pay:RemittanceInformation>Invoice ROFFI-INV-2026-0881, cocoa processing      equipment</pay:RemittanceInformation>  </pay:CreditTransferTransaction></pay:PaymentInstruction>"
+  },
+  {
+    "type": "paragraph",
+    "text": "The second is the Bank of Ghana settlement leg for that day's cycle. The three net positions sum to zero, which is the arithmetic property a balanced netting cycle must have."
+  },
+  {
+    "type": "paragraph",
+    "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stl:NetSettlementInstruction    xmlns:stl=\"http://papss.org/schema/settlement/v1\"    xmlns:cmn=\"http://papss.org/schema/common/v1\"    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"    xsi:schemaLocation=\"http://papss.org/schema/settlement/v1 NetSettlementInstruction.xsd\"    SchemaVersion=\"1.0\">  <stl:CycleId>PAPSS-CYCLE-2026-10-15</stl:CycleId>  <stl:SettlementDate>2026-10-15</stl:SettlementDate>  <stl:RtgsSystemId>BOG-RTGS</stl:RtgsSystemId>  <stl:CycleCurrency>GHS</stl:CycleCurrency>  <stl:ParticipantPositions>    <stl:ParticipantPosition>      <stl:ParticipantId>ECOCGHAC</stl:ParticipantId>      <stl:ParticipantName>Ecobank Ghana Limited</stl:ParticipantName>      <stl:ParticipantRole>DIRECT</stl:ParticipantRole>      <stl:GrossDebits Ccy=\"GHS\">4250000.00</stl:GrossDebits>      <stl:GrossCredits Ccy=\"GHS\">1180500.00</stl:GrossCredits>      <stl:NetAmount Ccy=\"GHS\">-3069500.00</stl:NetAmount>      <stl:TransactionCount>1284</stl:TransactionCount>    </stl:ParticipantPosition>    <stl:ParticipantPosition>      <stl:ParticipantId>GHCBGHAC</stl:ParticipantId>      <stl:ParticipantName>Ghana Commercial Bank</stl:ParticipantName>      <stl:ParticipantRole>DIRECT</stl:ParticipantRole>      <stl:GrossDebits Ccy=\"GHS\">920000.00</stl:GrossDebits>      <stl:GrossCredits Ccy=\"GHS\">2310000.00</stl:GrossCredits>      <stl:NetAmount Ccy=\"GHS\">1390000.00</stl:NetAmount>      <stl:TransactionCount>655</stl:TransactionCount>    </stl:ParticipantPosition>    <stl:ParticipantPosition>      <stl:ParticipantId>AFRXEGCX</stl:ParticipantId>      <stl:ParticipantName>African Export-Import Bank</stl:ParticipantName>      <stl:ParticipantRole>SETTLEMENT_AGENT</stl:ParticipantRole>      <stl:GrossDebits Ccy=\"GHS\">0.00</stl:GrossDebits>      <stl:GrossCredits Ccy=\"GHS\">1679500.00</stl:GrossCredits>      <stl:NetAmount Ccy=\"GHS\">1679500.00</stl:NetAmount>      <stl:TransactionCount>0</stl:TransactionCount>    </stl:ParticipantPosition>  </stl:ParticipantPositions>  <stl:TotalNetAmount Ccy=\"GHS\">0.00</stl:TotalNetAmount>  <stl:InstructionTimestamp>2026-10-15T17:30:04Z</stl:InstructionTimestamp>  <stl:AuthorisedBy>K. Mensah, Settlement Operations</stl:AuthorisedBy>  <stl:AuthorisedBy>A. Danquah, Settlement Operations</stl:AuthorisedBy></stl:NetSettlementInstruction>"
+  },
+  {
+    "type": "paragraph",
+    "text": "Both were validated with xmllint (libxml2) against their schemas:"
+  },
+  {
+    "type": "paragraph",
+    "text": "$ xmllint --noout --schema PaymentInstruction.xsd PaymentInstruction_Sample.xmlPaymentInstruction_Sample.xml validates$ xmllint --noout --schema NetSettlementInstruction.xsd NetSettlementInstruction_Sample.xmlNetSettlementInstruction_Sample.xml validates"
+  },
+  {
+    "type": "paragraph",
+    "text": "How XML validation supports the integration"
+  },
+  {
+    "type": "paragraph",
+    "text": "Validation at the API Gateway is the hub's first control. A message that fails its schema never reaches the ESB, so a defect costs a rejection at the boundary rather than a half-completed payment the orchestration has to unwind."
+  },
+  {
+    "type": "paragraph",
+    "text": "Error detection, demonstrated"
+  },
+  {
+    "type": "paragraph",
+    "text": "A test message was submitted carrying four defects a real adapter could plausibly produce: a truncated BIC, an unregistered currency, an amount with three decimal places, and a creditor record missing its account number."
+  },
+  {
+    "type": "paragraph",
+    "text": "<cmn:BICFI>ECOCGH</cmn:BICFI>...<pay:InstructedAmount Ccy=\"GBP\">250000.555</pay:InstructedAmount>...<pay:Creditor>  <cmn:Name>Legos Corp</cmn:Name>  <cmn:Country>NG</cmn:Country>   <!-- Account element missing --></pay:Creditor>"
+  },
+  {
+    "type": "paragraph",
+    "text": ":14: element BICFI: [facet 'pattern'] The value 'ECOCGH' is not accepted     by the pattern '[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?'.:24: element InstructedAmount, attribute 'Ccy': [facet 'enumeration']     The value 'GBP' is not an element of the set {'GHS','NGN','USD','KES','ZAR'}.:24: element InstructedAmount: [facet 'fractionDigits'] The value '250000.555'     has more fractional digits than are allowed ('2').:39: element Country: This element is not expected. Expected is ( Account ).PaymentInstruction_Invalid_Sample.xml fails to validate"
+  },
+  {
+    "type": "paragraph",
+    "text": "Each error names the line, the element, the rule broken and the value that broke it — enough for the sending bank's operations team to correct its adapter without raising a support case with PAPSS."
+  },
+  {
+    "type": "paragraph",
+    "text": "What validation guarantees"
+  },
+  {
+    "type": "paragraph",
+    "text": "Data integrity. Every amount is a decimal of at most two fraction digits carrying a mandatory currency attribute, so a figure cannot reach the clearing ledger with a rounding error or be read in the wrong currency by the receiving bank. The third error above is exactly that case: GHS 250,000.555 is not an amount any RTGS in the region can post."
+  },
+  {
+    "type": "paragraph",
+    "text": "Consistency. The participants run different core banking systems that produce different date formats, identifier lengths and internal code values. The schema forces all of them into one canonical representation before the ESB sees the message, which is what allows Audit & Reconciliation to compare a Ghanaian record and a Nigerian record against the same settlement cycle without a per-bank translation step."
+  },
+  {
+    "type": "paragraph",
+    "text": "Interoperability. The XSD is the machine-readable half of the contract. A participant generates its client classes directly from it, so a bank joining PAPSS integrates against a published definition rather than against prose documentation and trial and error. Because both message schemas import the same common types, a new participant inherits the same BIC, currency and amount rules as everyone already connected."
+  },
+  {
+    "type": "paragraph",
+    "text": "Error detection. The gateway is the earliest point a defect can be caught and the cheapest point to fix it. Had the currency error passed, it would instead have surfaced at Check Funds, where there is no GBP pre-funding account to debit — after the payment had been accepted and the customer told it was in flight."
+  },
+  {
+    "type": "paragraph",
+    "text": "Compliance reporting. PurposeCode is mandatory and drawn from a closed list, and Debtor and Creditor must each carry a name and a country. Those are precisely the fields sanctions screening in WS-02 and central bank reporting depend on, so the schema makes it impossible to accept a payment that cannot later be reported. Leaving them optional would push the failure into the compliance step, where a missing field means a manual review rather than an automatic rejection."
+  },
+  {
+    "type": "paragraph",
+    "text": "Auditability. PaymentId is a version-4 UUID unique across its batch and CycleId follows a fixed pattern, so every message carries a key that Audit & Reconciliation can join on across banks, currencies and cycles. The validated XML is itself the audit record: because it declares the schema version it conforms to, a message retrieved from the archive years later can still be parsed and re-checked against the schema that was in force when it was sent — something a free-text or ad-hoc format cannot guarantee."
+  },
+  {
+    "type": "paragraph",
+    "text": "What validation does not guarantee"
+  },
+  {
+    "type": "paragraph",
+    "text": "A schema proves a message is well formed, not that it is true. The valid sample would still pass validation if the beneficiary account were closed, if Ecobank Ghana held no GHS pre-funding, or if the creditor appeared on a sanctions list. This is why the Task 2 services declare business faults separately from schema faults, and why TotalNetAmount summing to zero is checked in Settlement Orchestration rather than in the XSD. Validation is the first control in the chain, not the only one."
+  }
+]

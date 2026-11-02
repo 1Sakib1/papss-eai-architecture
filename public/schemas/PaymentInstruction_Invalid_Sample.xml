@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pay:PaymentInstruction
+    xmlns:pay="http://papss.org/schema/payment/v1"
+    xmlns:cmn="http://papss.org/schema/common/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://papss.org/schema/payment/v1 PaymentInstruction.xsd"
+    SchemaVersion="1.0">
+  <pay:GroupHeader>
+    <pay:MessageId>PAPSS-MSG-2026-10-15-000412</pay:MessageId>
+    <pay:CreationDateTime>2026-10-15T09:41:58Z</pay:CreationDateTime>
+    <pay:NumberOfTransactions>1</pay:NumberOfTransactions>
+    <pay:InstructingAgent>
+      <!-- Defect 1: Truncated BIC (6 characters instead of 8 or 11) -->
+      <cmn:BICFI>ECOCGH</cmn:BICFI>
+      <cmn:Name>Ecobank Ghana Limited</cmn:Name>
+    </pay:InstructingAgent>
+    <pay:InstructedAgent>
+      <cmn:BICFI>ALTBNGLA</cmn:BICFI>
+      <cmn:Name>Alt Bank Nigeria</cmn:Name>
+    </pay:InstructedAgent>
+  </pay:GroupHeader>
+  <pay:CreditTransferTransaction>
+    <pay:PaymentId>8f3c1b2a-77d4-4e19-9a52-0b6c1d3e4f58</pay:PaymentId>
+    <pay:EndToEndId>ROFFI-INV-2026-0881</pay:EndToEndId>
+    <!-- Defect 2: Unregistered Currency 'GBP'; Defect 3: 3 fractional digits '250000.555' -->
+    <pay:InstructedAmount Ccy="GBP">250000.555</pay:InstructedAmount>
+    <pay:SettlementCurrency>NGN</pay:SettlementCurrency>
+    <pay:RequestedExecutionDate>2026-10-15</pay:RequestedExecutionDate>
+    <pay:ChargeBearer>SHAR</pay:ChargeBearer>
+    <pay:PurposeCode>GDDS</pay:PurposeCode>
+    <pay:Debtor>
+      <cmn:Name>Roffi Trading Ltd</cmn:Name>
+      <cmn:Account>0124558877001</cmn:Account>
+      <cmn:Country>GH</cmn:Country>
+    </pay:Debtor>
+    <pay:DebtorAgent>
+      <cmn:BICFI>ECOCGHAC</cmn:BICFI>
+    </pay:DebtorAgent>
+    <pay:Creditor>
+      <cmn:Name>Legos Corp</cmn:Name>
+      <!-- Defect 4: Missing mandatory Account element before Country -->
+      <cmn:Country>NG</cmn:Country>
+    </pay:Creditor>
+    <pay:CreditorAgent>
+      <cmn:BICFI>ALTBNGLA</cmn:BICFI>
+    </pay:CreditorAgent>
+  </pay:CreditTransferTransaction>
+</pay:PaymentInstruction>

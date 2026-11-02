@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:NetSettlementInstruction
+    xmlns:stl="http://papss.org/schema/settlement/v1"
+    xmlns:cmn="http://papss.org/schema/common/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://papss.org/schema/settlement/v1 NetSettlementInstruction.xsd"
+    SchemaVersion="1.0">
+  <stl:CycleId>PAPSS-CYCLE-2026-10-15</stl:CycleId>
+  <stl:SettlementDate>2026-10-15</stl:SettlementDate>
+  <stl:RtgsSystemId>BOG-RTGS</stl:RtgsSystemId>
+  <stl:CycleCurrency>GHS</stl:CycleCurrency>
+  <stl:ParticipantPositions>
+    <stl:ParticipantPosition>
+      <stl:ParticipantId>ECOCGHAC</stl:ParticipantId>
+      <stl:ParticipantName>Ecobank Ghana Limited</stl:ParticipantName>
+      <stl:ParticipantRole>DIRECT</stl:ParticipantRole>
+      <stl:GrossDebits Ccy="GHS">4250000.00</stl:GrossDebits>
+      <stl:GrossCredits Ccy="GHS">1180500.00</stl:GrossCredits>
+      <stl:NetAmount Ccy="GHS">-3069500.00</stl:NetAmount>
+      <stl:TransactionCount>1284</stl:TransactionCount>
+    </stl:ParticipantPosition>
+    <stl:ParticipantPosition>
+      <stl:ParticipantId>GHCBGHAC</stl:ParticipantId>
+      <stl:ParticipantName>Ghana Commercial Bank</stl:ParticipantName>
+      <stl:ParticipantRole>DIRECT</stl:ParticipantRole>
+      <stl:GrossDebits Ccy="GHS">920000.00</stl:GrossDebits>
+      <stl:GrossCredits Ccy="GHS">2310000.00</stl:GrossCredits>
+      <stl:NetAmount Ccy="GHS">1390000.00</stl:NetAmount>
+      <stl:TransactionCount>655</stl:TransactionCount>
+    </stl:ParticipantPosition>
+    <stl:ParticipantPosition>
+      <stl:ParticipantId>AFRXEGCX</stl:ParticipantId>
+      <stl:ParticipantName>African Export-Import Bank</stl:ParticipantName>
+      <stl:ParticipantRole>SETTLEMENT_AGENT</stl:ParticipantRole>
+      <stl:GrossDebits Ccy="GHS">0.00</stl:GrossDebits>
+      <stl:GrossCredits Ccy="GHS">1679500.00</stl:GrossCredits>
+      <stl:NetAmount Ccy="GHS">1679500.00</stl:NetAmount>
+      <stl:TransactionCount>0</stl:TransactionCount>
+    </stl:ParticipantPosition>
+  </stl:ParticipantPositions>
+  <stl:TotalNetAmount Ccy="GHS">0.00</stl:TotalNetAmount>
+  <stl:InstructionTimestamp>2026-10-15T17:30:04Z</stl:InstructionTimestamp>
+  <stl:AuthorisedBy>K. Mensah, Settlement Operations</stl:AuthorisedBy>
+  <stl:AuthorisedBy>A. Danquah, Settlement Operations</stl:AuthorisedBy>
+</stl:NetSettlementInstruction>

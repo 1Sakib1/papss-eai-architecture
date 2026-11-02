@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://papss.org/schema/settlement/v1"
+            xmlns:stl="http://papss.org/schema/settlement/v1"
+            xmlns:cmn="http://papss.org/schema/common/v1"
+            elementFormDefault="qualified">
+
+  <xsd:import namespace="http://papss.org/schema/common/v1"
+              schemaLocation="PapssCommonTypes.xsd"/>
+
+  <!-- Root: NetSettlementInstruction -->
+  <xsd:element name="NetSettlementInstruction" type="stl:NetSettlementInstructionType">
+    <!-- A participant may hold only one position per settlement cycle -->
+    <xsd:unique name="UniqueParticipant">
+      <xsd:selector xpath="stl:ParticipantPositions/stl:ParticipantPosition"/>
+      <xsd:field xpath="stl:ParticipantId"/>
+    </xsd:unique>
+  </xsd:element>
+
+  <xsd:complexType name="NetSettlementInstructionType">
+    <xsd:sequence>
+      <xsd:element name="CycleId">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:pattern value="PAPSS-CYCLE-[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="SettlementDate" type="xsd:date"/>
+      <xsd:element name="RtgsSystemId">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="BOG-RTGS"/>
+            <xsd:enumeration value="CBN-RTGS"/>
+            <xsd:enumeration value="AFREXIM"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="CycleCurrency" type="cmn:CurrencyCodeType"/>
+      <xsd:element name="ParticipantPositions" type="stl:ParticipantPositionsType"/>
+      <xsd:element name="TotalNetAmount" type="cmn:SignedAmountType"/>
+      <xsd:element name="InstructionTimestamp" type="xsd:dateTime"/>
+      <xsd:element name="AuthorisedBy" type="cmn:NameType" minOccurs="2" maxOccurs="2"/>
+    </xsd:sequence>
+    <xsd:attribute name="SchemaVersion" type="xsd:string" use="required" fixed="1.0"/>
+  </xsd:complexType>
+
+  <!-- Participant Positions Collection -->
+  <xsd:complexType name="ParticipantPositionsType">
+    <xsd:sequence>
+      <xsd:element name="ParticipantPosition"
+                   type="stl:ParticipantPositionType"
+                   minOccurs="2" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Participant Position -->
+  <xsd:complexType name="ParticipantPositionType">
+    <xsd:sequence>
+      <xsd:element name="ParticipantId" type="cmn:BICType"/>
+      <xsd:element name="ParticipantName" type="cmn:NameType"/>
+      <xsd:element name="ParticipantRole">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DIRECT"/>
+            <xsd:enumeration value="INDIRECT_SPONSORED"/>
+            <xsd:enumeration value="SETTLEMENT_AGENT"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="SponsorId" type="cmn:BICType" minOccurs="0"/>
+      <xsd:element name="GrossDebits" type="cmn:NonNegativeAmountType"/>
+      <xsd:element name="GrossCredits" type="cmn:NonNegativeAmountType"/>
+      <xsd:element name="NetAmount" type="cmn:SignedAmountType"/>
+      <xsd:element name="TransactionCount" type="xsd:nonNegativeInteger"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Root: SettlementConfirmation -->
+  <xsd:element name="SettlementConfirmation" type="stl:SettlementConfirmationType"/>
+
+  <xsd:complexType name="SettlementConfirmationType">
+    <xsd:sequence>
+      <xsd:element name="CycleId" type="xsd:string"/>
+      <xsd:element name="RtgsSystemId" type="xsd:string"/>
+      <xsd:element name="SettlementStatus">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SETTLED"/>
+            <xsd:enumeration value="PARTIAL"/>
+            <xsd:enumeration value="EXCEPTION"/>
+            <xsd:enumeration value="PENDING"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="RtgsConfirmationRef" type="cmn:ReferenceType"/>
+      <xsd:element name="SettledAmount" type="cmn:NonNegativeAmountType"/>
+      <xsd:element name="SettledTimestamp" type="xsd:dateTime"/>
+      <xsd:element name="MismatchDetails" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

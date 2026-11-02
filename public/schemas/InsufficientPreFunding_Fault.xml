@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:pay="http://papss.org/schema/payment/v1">
+  <soap:Body>
+    <soap:Fault>
+      <soap:Code>
+        <soap:Value>soap:Sender</soap:Value>
+        <soap:Subcode>
+          <soap:Value>pay:InsufficientPreFunding</soap:Value>
+        </soap:Subcode>
+      </soap:Code>
+      <soap:Reason>
+        <soap:Text xml:lang="en">Available pre-funding is insufficient to reserve the instructed amount.</soap:Text>
+      </soap:Reason>
+      <soap:Detail>
+        <pay:PaymentFault>
+          <pay:faultCode>AM04</pay:faultCode>
+          <pay:faultCategory>BUSINESS</pay:faultCategory>
+          <pay:paymentId>8f3c1b2a-77d4-4e19-9a52-0b6c1d3e4f58</pay:paymentId>
+          <pay:clearingReference>PAPSS-2026-GH-0001234</pay:clearingReference>
+          <pay:participantId>ECOCGHAC</pay:participantId>
+          <pay:settlementCurrency>GHS</pay:settlementCurrency>
+          <pay:requestedAmount>250000.00</pay:requestedAmount>
+          <pay:availableBalance>186420.75</pay:availableBalance>
+          <pay:shortfall>63579.25</pay:shortfall>
+          <pay:recoveryAction>HOLD_AND_REQUEST_TOPUP</pay:recoveryAction>
+          <pay:retryAfter>PT30M</pay:retryAfter>
+          <pay:escalationLevel>PARTICIPANT_TREASURY</pay:escalationLevel>
+          <pay:faultTimestamp>2026-10-15T09:42:17Z</pay:faultTimestamp>
+        </pay:PaymentFault>
+      </soap:Detail>
+    </soap:Fault>
+  </soap:Body>
+</soap:Envelope>

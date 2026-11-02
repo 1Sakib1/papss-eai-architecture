@@ -1,0 +1,1251 @@
+{
+  "participants": [
+    {
+      "id": "_07baf4af-c413-4b31-9b45-70409baa01dd",
+      "name": "Ecobank Ghana",
+      "processRef": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_08277fa1-8958-4caa-a6f8-dc085d19abcd",
+      "name": "Central Bank of Nigeria (RTGS)",
+      "processRef": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_4199db68-2d0f-4b80-8daf-56a761c60b8a",
+      "name": "Alt Bank Nigeria",
+      "processRef": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_42a19cad-e6f7-4ad8-b2f8-8709affaf50c",
+      "name": "Sponsored Indirect Participant",
+      "processRef": "process_42a19cad-e6f7-4ad8-b2f8-8709affaf50c"
+    },
+    {
+      "id": "_53f6aad0-c43d-4dbb-a39f-6c141af2f621",
+      "name": "Legos corp",
+      "processRef": "process_53f6aad0-c43d-4dbb-a39f-6c141af2f621"
+    },
+    {
+      "id": "_a4e8a613-e32d-41cb-b9b7-cface420a580",
+      "name": "Afreximbank",
+      "processRef": "process_a4e8a613-e32d-41cb-b9b7-cface420a580"
+    },
+    {
+      "id": "_a7bbe936-38a9-43fd-95c6-d9bad91276b6",
+      "name": "Roffi Trading Ltd",
+      "processRef": "process_a7bbe936-38a9-43fd-95c6-d9bad91276b6"
+    },
+    {
+      "id": "_afe5e0a9-60ca-46a9-82ae-1246cb08493c",
+      "name": "Bank of Ghana (RTGS)",
+      "processRef": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_ec5fd421-5e7f-4163-b867-c1c4c42ed533",
+      "name": "PAPSS",
+      "processRef": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    }
+  ],
+  "messageFlows": [
+    {
+      "id": "_08175894-954b-4c93-acc4-f5176ebefd2e",
+      "name": "Top-up request",
+      "sourceRef": "_fc3fc7da-6018-4112-81c7-bfa05da60f1b",
+      "targetRef": "_604f27e9-8dea-41a0-a8bd-a00c2dea9c84"
+    },
+    {
+      "id": "_0aa941d6-f17e-450e-bc94-6e41f80eb5fa",
+      "name": "NG balance result",
+      "sourceRef": "_36b99fcd-ac6c-471e-8cb5-87d9469e9363",
+      "targetRef": "_9585f50d-430f-45ae-a30f-bf1a5b2bdbf0"
+    },
+    {
+      "id": "_1cf115fb-e24d-44a1-b483-da0eec61a73b",
+      "name": "NG funding result",
+      "sourceRef": "_8263e24e-c241-47d9-a582-812e76ce072b",
+      "targetRef": "_4c4578b4-b078-4453-a54e-34a9ffa3be7e"
+    },
+    {
+      "id": "_387b489f-d65f-4679-bf62-4d69ca1506e9",
+      "name": "Hard-currency net instruction",
+      "sourceRef": "_eed04366-0e78-4d64-868d-594ec82172e5",
+      "targetRef": "_8e17c3c1-254d-4d22-aeea-002daa707c02"
+    },
+    {
+      "id": "_3e06d9df-22dd-4cfa-8668-d83137699647",
+      "name": "Payment request",
+      "sourceRef": "_1efbf428-6774-48cf-9696-ad4f091ca7f4",
+      "targetRef": "_632d2e50-8439-4bf1-a6d8-cf0ff03b755c"
+    },
+    {
+      "id": "_466281b9-ef86-4645-b509-2553db064964",
+      "name": "GH net result",
+      "sourceRef": "_714ab145-bf87-4380-a7c0-7768ec7cf77b",
+      "targetRef": "_eac4c053-4113-46ac-bbb0-9f579158ea86"
+    },
+    {
+      "id": "_4ebde9b2-cc3c-4178-bdb7-4a9d0583a647",
+      "name": "Hard-currency net result",
+      "sourceRef": "_33bd14d9-8fe2-4d1e-a842-d728436d93ca",
+      "targetRef": "_67ea533d-3fbe-4ef2-8a1c-d35e6192ebbb"
+    },
+    {
+      "id": "_5ecd2593-924e-4332-832b-bce1a7dbef8e",
+      "name": "Payment instruction",
+      "sourceRef": "_65061016-8e2c-48b0-a480-20355fcce3c0",
+      "targetRef": "_23c979ba-22e9-4772-a6ed-e967b269b1ee"
+    },
+    {
+      "id": "_6626dd77-06f1-4fbe-a7a8-5bd4611393b7",
+      "name": "Sponsored funding request",
+      "sourceRef": "_c4f361d6-886c-4cfa-b720-04cf02d7d364",
+      "targetRef": "_c0142caa-7dab-4ad0-b2a5-98172e3e0f37"
+    },
+    {
+      "id": "_6ed32a13-d132-40b4-b14f-8b51ccf316d3",
+      "name": "GH net instruction",
+      "sourceRef": "_59941d67-ef09-4763-8c06-831f49468a37",
+      "targetRef": "_a281e0d4-a050-45b4-8d9b-68ab3feb0fa7"
+    },
+    {
+      "id": "_771d43a8-d0f0-4b45-be00-0cae21005870",
+      "name": "GH settlement report",
+      "sourceRef": "_51d002be-d1b4-4726-b77c-fb4afb008f1c",
+      "targetRef": "_f6538a93-71e6-4e14-a3bf-9fd0e08526e8"
+    },
+    {
+      "id": "_79190207-d90a-4882-97a3-906526bc7b67",
+      "name": "Customer result",
+      "sourceRef": "_e9184f88-aa3b-447c-b926-d13148fcea7b",
+      "targetRef": "_b95225dc-fa1b-4364-a078-9ac04454cb3d"
+    },
+    {
+      "id": "_95481332-b819-4a41-a709-7d61a8d1b327",
+      "name": "NG net instruction",
+      "sourceRef": "_f4fffe69-9bcc-45ee-8eb3-099536f6bea8",
+      "targetRef": "_721e9f27-3a9d-4b0a-83b5-e8aed5428f18"
+    },
+    {
+      "id": "_9c86bcb3-e2cc-47d5-8768-0e14a340b42c",
+      "name": "GH funding result",
+      "sourceRef": "_48efbba1-bc6c-42e6-9352-a02baaba5a20",
+      "targetRef": "_e5291063-7a0a-4d4e-94b4-959264ed59c6"
+    },
+    {
+      "id": "_a04cfd46-85e9-4db1-8880-19bffb470d91",
+      "name": "GHS funding order",
+      "sourceRef": "_a1c9e812-90f0-4d56-86b2-8bf104583cf5",
+      "targetRef": "_886d947f-f4cd-4022-802e-83504c10a575"
+    },
+    {
+      "id": "_a86cb709-58ef-4719-b7f0-87661b022700",
+      "name": "Beneficiary credit notice",
+      "sourceRef": "_f16c2432-d61e-4b66-8880-e7f2bdd019ea",
+      "targetRef": "_de2f0392-8d49-4760-9f5d-2bf6335eb053"
+    },
+    {
+      "id": "_b8df7c75-27a9-498f-a92d-e4ffddde10c2",
+      "name": "GH balance result",
+      "sourceRef": "_dbc1912e-9f2a-421c-9344-d2ded0e8b377",
+      "targetRef": "_c7deb97c-a82c-48ca-9aac-7a8a1321405d"
+    },
+    {
+      "id": "_ba301601-103e-42c5-a28c-de2b1e1060ac",
+      "name": "Sponsored funding result",
+      "sourceRef": "_ff4414f7-7f44-4f42-935b-bd9121ead78c",
+      "targetRef": "_6fba3ef7-3e02-43a2-97dd-57c6dc769d67"
+    },
+    {
+      "id": "_c263e396-0b4a-47f5-b881-bd097e704bbe",
+      "name": "Final payment result",
+      "sourceRef": "_658efd76-a94a-4577-bec3-576712d78045",
+      "targetRef": "_7c9c7d9f-b125-4e5b-b79c-ec4d9973908a"
+    },
+    {
+      "id": "_c838a4d5-8dd0-41f7-9e46-829f3aedcf96",
+      "name": "NGN funding order",
+      "sourceRef": "_419161c0-2969-4d86-80ab-19e9d6a189cf",
+      "targetRef": "_7fd479f0-a2d6-4e19-be3d-dc7aedde7813"
+    },
+    {
+      "id": "_ca16e783-b9ca-4392-b29b-dce571f4c7a0",
+      "name": "NG settlement report",
+      "sourceRef": "_3de4de62-d39a-4116-92b3-4b8db9b7923e",
+      "targetRef": "_5765c71e-8396-47be-bf52-4dbc95de1826"
+    },
+    {
+      "id": "_d05c1527-67b0-41f6-b079-ca41779554ea",
+      "name": "NGN credit instruction",
+      "sourceRef": "_42e83ed7-3d50-4a77-aafa-0debc309c453",
+      "targetRef": "_97f713f6-6cf4-4a9b-b371-7acd72f1bcfd"
+    },
+    {
+      "id": "_d58319b7-f118-420e-b714-09de5bd81831",
+      "name": "NG net result",
+      "sourceRef": "_9f1662ac-67c1-453f-8e18-2e6cb0124bfe",
+      "targetRef": "_7ff19049-28a7-470d-8559-e4aca6357b5c"
+    },
+    {
+      "id": "_e2568904-a093-4cb5-b217-7582b079b1a6",
+      "name": "Credit result",
+      "sourceRef": "_540fcb53-f11b-4087-9cfb-52ac0bd88d4c",
+      "targetRef": "_6f0a1850-96f5-4577-8598-c71a4b52957e"
+    },
+    {
+      "id": "_fe6dc801-e418-47b5-8e1e-42a9f9ff2a6c",
+      "name": "Credit status query",
+      "sourceRef": "_289806e7-efa3-4e81-b97a-48386a264ee2",
+      "targetRef": "_7dc7753a-5559-4bf1-b845-22f275d6a53b"
+    }
+  ],
+  "processes": [
+    {
+      "id": "process_07baf4af-c413-4b31-9b45-70409baa01dd",
+      "name": "Ecobank Ghana",
+      "lanes": [
+        {
+          "id": "_67b9f97e-8954-4eb0-b37d-7c66341e8529",
+          "name": "Customer Channel",
+          "nodeRefs": [
+            "_3376b82c-63f4-4617-a19b-7e638ee0c2ae",
+            "_632d2e50-8439-4bf1-a6d8-cf0ff03b755c",
+            "_94d92c03-e8a7-48e0-a8de-d444e729ffc0",
+            "_e9184f88-aa3b-447c-b926-d13148fcea7b"
+          ]
+        },
+        {
+          "id": "_9c5ba867-fa1e-42c8-b626-2ab4f7159a00",
+          "name": "Payment Operations",
+          "nodeRefs": [
+            "_1ae583f6-c109-449a-ad14-560f24155232",
+            "_2e5db51d-498b-4fac-aafb-c9cb485a174d",
+            "_65061016-8e2c-48b0-a480-20355fcce3c0",
+            "_7c9c7d9f-b125-4e5b-b79c-ec4d9973908a",
+            "_8cb48f08-89c8-4bdb-8dc4-f783cb12fdfb",
+            "_90a3f721-9a16-4b1f-8a62-9e7287baa5fe",
+            "_9b53b58d-377c-46af-a4b1-4ac9d6057898",
+            "_add9cd5b-69df-400a-b189-3c6455ae0813",
+            "_dcf9eab3-6eca-450b-bff0-f586863e0e97"
+          ]
+        },
+        {
+          "id": "_bc248881-1f62-4738-bf90-a7778f9c15d8",
+          "name": "Treasury/liquidity",
+          "nodeRefs": [
+            "_02dbfb23-6db8-4042-83d1-22d26dbd77cf",
+            "_1f7d0e28-8519-4610-8b68-15c33ce49d27",
+            "_2e2dec7a-7eea-478c-ae99-bd7fb615a544",
+            "_4df2463b-203b-42bb-babb-d12f04daefb7",
+            "_604f27e9-8dea-41a0-a8bd-a00c2dea9c84",
+            "_64186840-f72b-4a77-8849-17757011b19f",
+            "_8d1177f6-4d44-40b7-be03-a3ff999fb3b1",
+            "_a1c9e812-90f0-4d56-86b2-8bf104583cf5",
+            "_c0142caa-7dab-4ad0-b2a5-98172e3e0f37",
+            "_c7deb97c-a82c-48ca-9aac-7a8a1321405d",
+            "_d0a0973f-f9ab-46cc-8682-c2a207b468cb",
+            "_eb141b68-1d5e-4565-844b-988adec12242",
+            "_f6538a93-71e6-4e14-a3bf-9fd0e08526e8",
+            "_ff4414f7-7f44-4f42-935b-bd9121ead78c"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd",
+      "name": "Central Bank of Nigeria (RTGS)",
+      "lanes": []
+    },
+    {
+      "id": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a",
+      "name": "Alt Bank Nigeria",
+      "lanes": [
+        {
+          "id": "_2870e9e8-750d-42f0-822c-712e8229ad92",
+          "name": "Treasury/Liquidity",
+          "nodeRefs": [
+            "_0e060d31-b52e-42a8-b87f-ab584296b603",
+            "_2acece01-8260-40f9-9658-4ddcd0b3d15d",
+            "_349a9b0e-a413-4c5d-aad9-544d2837f028",
+            "_419161c0-2969-4d86-80ab-19e9d6a189cf",
+            "_5765c71e-8396-47be-bf52-4dbc95de1826",
+            "_8f4ef818-b7b4-43a2-899e-8c16384a0c26",
+            "_9585f50d-430f-45ae-a30f-bf1a5b2bdbf0",
+            "_d8d8ece5-8d4c-4eef-8fa3-3d52e016b506",
+            "_e07c2989-531c-44a7-a8ac-bda6b077c182",
+            "_f449d741-08fc-42e1-a919-1c04561c9eaa"
+          ]
+        },
+        {
+          "id": "_760cef48-03ea-4344-8038-6b316931aca3",
+          "name": "Customer Channel",
+          "nodeRefs": [
+            "_e052db1b-1d14-435e-9ce6-816b2728cf54",
+            "_f16c2432-d61e-4b66-8880-e7f2bdd019ea"
+          ]
+        },
+        {
+          "id": "_940ed5d5-a9df-4554-8b23-5187a9773626",
+          "name": "Payment Operations",
+          "nodeRefs": [
+            "_540fcb53-f11b-4087-9cfb-52ac0bd88d4c",
+            "_55017965-852e-460f-b769-1e976e9a0b4c",
+            "_5be7376c-fdd3-465e-a83e-f55e70720e6a",
+            "_7dc7753a-5559-4bf1-b845-22f275d6a53b",
+            "_97f713f6-6cf4-4a9b-b371-7acd72f1bcfd",
+            "_a9569c01-e3a1-41b8-81ca-ad01b0da5f8d",
+            "_b3ace603-c6ea-4bb8-8249-83a4db1fb3b5",
+            "_bf4cbb53-cf75-4e75-87e2-5393593b7b68",
+            "_d960b23e-8788-47d1-811e-68c72eaada6e",
+            "_fbb81c9c-eb4d-4699-8321-e06223052238"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "process_42a19cad-e6f7-4ad8-b2f8-8709affaf50c",
+      "name": "Sponsored Indirect Participant",
+      "lanes": []
+    },
+    {
+      "id": "process_53f6aad0-c43d-4dbb-a39f-6c141af2f621",
+      "name": "Legos corp",
+      "lanes": []
+    },
+    {
+      "id": "process_a4e8a613-e32d-41cb-b9b7-cface420a580",
+      "name": "Afreximbank",
+      "lanes": []
+    },
+    {
+      "id": "process_a7bbe936-38a9-43fd-95c6-d9bad91276b6",
+      "name": "Roffi Trading Ltd",
+      "lanes": []
+    },
+    {
+      "id": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c",
+      "name": "Bank of Ghana (RTGS)",
+      "lanes": []
+    },
+    {
+      "id": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533",
+      "name": "PAPSS",
+      "lanes": [
+        {
+          "id": "_05ce7f42-bf79-464d-a836-75459059e0be",
+          "name": "Workflow Management and Monitoring",
+          "nodeRefs": [
+            "_02da5c10-4a6c-4482-9944-6c4617a6b47b",
+            "_0a7c46af-cb9d-4149-95db-32635460204e",
+            "_160ae098-9926-4e7f-97f1-ec38bf60c3c7",
+            "_2da8c028-28ad-49be-8ceb-a8d29c89bc72",
+            "_3de4de62-d39a-4116-92b3-4b8db9b7923e",
+            "_44034bc1-b080-43f0-8c67-d10faf7d1a75",
+            "_477075d5-c82a-40ec-8de4-584f37921096",
+            "_4a7362b8-ed49-45ad-898f-399fd7e8f3de",
+            "_4ff42968-9c92-4fb3-b2dd-26a8e31c6854",
+            "_51d002be-d1b4-4726-b77c-fb4afb008f1c",
+            "_71426489-f351-4d92-b9da-1f51f9c6ae20",
+            "_71ec97f4-df3b-42bf-a534-9b51416cd91b",
+            "_95b26d8f-acf0-4f42-9d48-9ea5df40629a",
+            "_967fd590-f5e3-4f09-9ba0-7921a3ce160f",
+            "_968d8a17-a7e7-4f1a-9fd3-aab624a45f72",
+            "_99fd3d2a-a6d5-4b3e-8557-33c02e4c6690",
+            "_a97a1c8e-42d1-46e8-9de7-2c9c78b7ac38",
+            "_aae58321-ec36-480e-83da-32c360dda699",
+            "_acf21892-b737-401e-af0c-591cc9b6d169",
+            "_ae5f6e17-8999-4dce-a75a-25e108ed6300",
+            "_b0de61a4-cfe0-4d0a-b2cd-d3c7ed33c7e5",
+            "_b926d67b-1b1d-4eb5-900e-81f66396df70",
+            "_bd3cc06b-4aa5-490e-8e0c-4ae2bc1e7e17",
+            "_c073c1e5-f011-43fe-aa54-0cd301f63241",
+            "_c5502929-1f1b-4176-abf4-d5306998bb57",
+            "_c6760113-cda4-47e7-8f1e-0bb7af5d3ced",
+            "_d8f3e5ed-f7bd-4ba5-a826-27d56e8a48fd",
+            "_dd55a062-09a4-4e69-95ff-6ee27e4eb4ae"
+          ]
+        },
+        {
+          "id": "_8e4f619e-4fcf-4bb4-af8e-94cd5d00666a",
+          "name": "Message Routing and Data Transformation",
+          "nodeRefs": [
+            "_23c979ba-22e9-4772-a6ed-e967b269b1ee",
+            "_289806e7-efa3-4e81-b97a-48386a264ee2",
+            "_36b99fcd-ac6c-471e-8cb5-87d9469e9363",
+            "_42e83ed7-3d50-4a77-aafa-0debc309c453",
+            "_4c4578b4-b078-4453-a54e-34a9ffa3be7e",
+            "_658efd76-a94a-4577-bec3-576712d78045",
+            "_6f0a1850-96f5-4577-8598-c71a4b52957e",
+            "_dbc1912e-9f2a-421c-9344-d2ded0e8b377",
+            "_e5291063-7a0a-4d4e-94b4-959264ed59c6",
+            "_f5865f69-1d4f-4c2d-bfaa-779ad66120eb",
+            "_fc3fc7da-6018-4112-81c7-bfa05da60f1b"
+          ]
+        },
+        {
+          "id": "_c00d79ec-9e4b-4ee8-8565-5e7bcf913062",
+          "name": "Business Rules and Security",
+          "nodeRefs": [
+            "_3d5df1d4-bbb9-4c4c-9ade-99c348e6d37e",
+            "_6f479f80-1a83-4313-bf3b-5a8b5cbb725e",
+            "_a6972e03-c2af-4828-ae71-f2dc5bd3b7e7",
+            "_c38aeac4-e710-42ab-9327-180930362275"
+          ]
+        }
+      ]
+    }
+  ],
+  "tasksCount": 37,
+  "tasks": [
+    {
+      "id": "_02dbfb23-6db8-4042-83d1-22d26dbd77cf",
+      "name": "Set Fund Failure",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_1ae583f6-c109-449a-ad14-560f24155232",
+      "name": "Release Hold",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_1f7d0e28-8519-4610-8b68-15c33ce49d27",
+      "name": "Check Funding",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_2e5db51d-498b-4fac-aafb-c9cb485a174d",
+      "name": "Set Rejected",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_64186840-f72b-4a77-8849-17757011b19f",
+      "name": "Review Report",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_8cb48f08-89c8-4bdb-8dc4-f783cb12fdfb",
+      "name": "Hold GHS",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_9b53b58d-377c-46af-a4b1-4ac9d6057898",
+      "name": "Post Debit",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_add9cd5b-69df-400a-b189-3c6455ae0813",
+      "name": "Check Request",
+      "type": "task",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_15e7eacf-08dd-46f0-be3b-000cae4bc61e",
+      "name": "Post Funding",
+      "type": "task",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_27b66871-9eb8-426d-b2a2-cec6761e9a19",
+      "name": "Post NG Net",
+      "type": "task",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_0e060d31-b52e-42a8-b87f-ab584296b603",
+      "name": "Review Report",
+      "type": "task",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_55017965-852e-460f-b769-1e976e9a0b4c",
+      "name": "Credit NGN",
+      "type": "task",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_5be7376c-fdd3-465e-a83e-f55e70720e6a",
+      "name": "Set Rejected",
+      "type": "task",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_bf4cbb53-cf75-4e75-87e2-5393593b7b68",
+      "name": "Check Credit",
+      "type": "task",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_e07c2989-531c-44a7-a8ac-bda6b077c182",
+      "name": "Check Balance",
+      "type": "task",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_f449d741-08fc-42e1-a919-1c04561c9eaa",
+      "name": "Review Funding",
+      "type": "task",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_fbb81c9c-eb4d-4699-8321-e06223052238",
+      "name": "Read Status",
+      "type": "task",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_c7333bd0-0faf-4112-8306-9b5756493e7c",
+      "name": "Prepare Request",
+      "type": "userTask",
+      "processId": "process_42a19cad-e6f7-4ad8-b2f8-8709affaf50c"
+    },
+    {
+      "id": "_ddfb3a82-8532-49fd-9548-bcd7a4872934",
+      "name": "View Credit",
+      "type": "userTask",
+      "processId": "process_53f6aad0-c43d-4dbb-a39f-6c141af2f621"
+    },
+    {
+      "id": "_f9531ce9-d57e-49d5-b287-b38f071f4988",
+      "name": "Post FX Net",
+      "type": "task",
+      "processId": "process_a4e8a613-e32d-41cb-b9b7-cface420a580"
+    },
+    {
+      "id": "_28f87391-9fe7-43d7-a916-653f33f078c5",
+      "name": "Enter Payment",
+      "type": "userTask",
+      "processId": "process_a7bbe936-38a9-43fd-95c6-d9bad91276b6"
+    },
+    {
+      "id": "_88e8cf3a-d2d3-4877-8da8-d748ef7e5788",
+      "name": "Post GH Net",
+      "type": "task",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_c2cd49e0-eb51-422a-a6bd-b5f2c585f133",
+      "name": "Post Funding",
+      "type": "task",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_2da8c028-28ad-49be-8ceb-a8d29c89bc72",
+      "name": "Reject Payment",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_4a7362b8-ed49-45ad-898f-399fd7e8f3de",
+      "name": "Flag Exception",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_53f12ba6-1a38-48dc-ba08-4be1809272cc",
+      "name": "Calculate Net",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_67d75217-3667-4df7-9864-4180e6f8522f",
+      "name": "Check RTGS",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_6f479f80-1a83-4313-bf3b-5a8b5cbb725e",
+      "name": "Check Payment",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_71ec97f4-df3b-42bf-a534-9b51416cd91b",
+      "name": "Post Clearing",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_95b26d8f-acf0-4f42-9d48-9ea5df40629a",
+      "name": "Open Case",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_9a1e275c-1a72-4d43-92a5-cb15bb5c02d4",
+      "name": "Set Settled",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_9a7cfea3-cd23-43d9-b6ca-1117f5553d16",
+      "name": "Set Exception",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_9bef022a-b6df-4f6e-8f97-4ae84f948797",
+      "name": "Reconcile",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_a6972e03-c2af-4828-ae71-f2dc5bd3b7e7",
+      "name": "Check Funds",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_acf21892-b737-401e-af0c-591cc9b6d169",
+      "name": "Record Funding",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_b0de61a4-cfe0-4d0a-b2cd-d3c7ed33c7e5",
+      "name": "Record Funding",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_c073c1e5-f011-43fe-aa54-0cd301f63241",
+      "name": "Mark Pending",
+      "type": "task",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    }
+  ],
+  "events": [
+    {
+      "id": "_604f27e9-8dea-41a0-a8bd-a00c2dea9c84",
+      "name": "Top-up Request",
+      "type": "startEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_632d2e50-8439-4bf1-a6d8-cf0ff03b755c",
+      "name": "Payment Request",
+      "type": "startEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_65061016-8e2c-48b0-a480-20355fcce3c0",
+      "name": "Submit Payment",
+      "type": "intermediateThrowEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_7c9c7d9f-b125-4e5b-b79c-ec4d9973908a",
+      "name": "PAPSS Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_8d1177f6-4d44-40b7-be03-a3ff999fb3b1",
+      "name": "Funding Checked",
+      "type": "endEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_94d92c03-e8a7-48e0-a8de-d444e729ffc0",
+      "name": "Request Closed",
+      "type": "endEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_a1c9e812-90f0-4d56-86b2-8bf104583cf5",
+      "name": "Send Top-up",
+      "type": "intermediateThrowEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_c0142caa-7dab-4ad0-b2a5-98172e3e0f37",
+      "name": "Sponsor Request",
+      "type": "startEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_c7deb97c-a82c-48ca-9aac-7a8a1321405d",
+      "name": "Balance Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_e9184f88-aa3b-447c-b926-d13148fcea7b",
+      "name": "Notify Roffi",
+      "type": "intermediateThrowEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_eb141b68-1d5e-4565-844b-988adec12242",
+      "name": "Report Reviewed",
+      "type": "endEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_f6538a93-71e6-4e14-a3bf-9fd0e08526e8",
+      "name": "Report Received",
+      "type": "startEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_ff4414f7-7f44-4f42-935b-bd9121ead78c",
+      "name": "Sponsor Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_5456776b-1ee0-4e40-8d71-517cffa0b546",
+      "name": "Net Work Done",
+      "type": "endEvent",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_721e9f27-3a9d-4b0a-83b5-e8aed5428f18",
+      "name": "NG Net Order",
+      "type": "startEvent",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_7fd479f0-a2d6-4e19-be3d-dc7aedde7813",
+      "name": "Funding Order",
+      "type": "startEvent",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_8263e24e-c241-47d9-a582-812e76ce072b",
+      "name": "Funding Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_9f1662ac-67c1-453f-8e18-2e6cb0124bfe",
+      "name": "NG Net Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_c665d4e7-daa4-441d-8e1f-85c032a40bc8",
+      "name": "Funding Checked",
+      "type": "endEvent",
+      "processId": "process_08277fa1-8958-4caa-a6f8-dc085d19abcd"
+    },
+    {
+      "id": "_2acece01-8260-40f9-9658-4ddcd0b3d15d",
+      "name": "Report Reviewed",
+      "type": "endEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_349a9b0e-a413-4c5d-aad9-544d2837f028",
+      "name": "Liquidity Check",
+      "type": "startEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_419161c0-2969-4d86-80ab-19e9d6a189cf",
+      "name": "Send Top-up",
+      "type": "intermediateThrowEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_540fcb53-f11b-4087-9cfb-52ac0bd88d4c",
+      "name": "Credit Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_5765c71e-8396-47be-bf52-4dbc95de1826",
+      "name": "Report Received",
+      "type": "startEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_7dc7753a-5559-4bf1-b845-22f275d6a53b",
+      "name": "Credit Query",
+      "type": "startEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_8f4ef818-b7b4-43a2-899e-8c16384a0c26",
+      "name": "Funding Checked",
+      "type": "endEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_9585f50d-430f-45ae-a30f-bf1a5b2bdbf0",
+      "name": "Balance Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_97f713f6-6cf4-4a9b-b371-7acd72f1bcfd",
+      "name": "Credit Request",
+      "type": "startEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_e052db1b-1d14-435e-9ce6-816b2728cf54",
+      "name": "Request Closed",
+      "type": "endEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_f16c2432-d61e-4b66-8880-e7f2bdd019ea",
+      "name": "Notify Legos",
+      "type": "intermediateThrowEvent",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_2dca7bcf-4bab-447d-9ed1-e16d5e436d12",
+      "name": "Need Funds",
+      "type": "startEvent",
+      "processId": "process_42a19cad-e6f7-4ad8-b2f8-8709affaf50c"
+    },
+    {
+      "id": "_6fba3ef7-3e02-43a2-97dd-57c6dc769d67",
+      "name": "Sponsor Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_42a19cad-e6f7-4ad8-b2f8-8709affaf50c"
+    },
+    {
+      "id": "_b6faca98-e591-48fc-9ee1-6710d607956f",
+      "name": "Request Closed",
+      "type": "endEvent",
+      "processId": "process_42a19cad-e6f7-4ad8-b2f8-8709affaf50c"
+    },
+    {
+      "id": "_c4f361d6-886c-4cfa-b720-04cf02d7d364",
+      "name": "Request Sponsor",
+      "type": "intermediateThrowEvent",
+      "processId": "process_42a19cad-e6f7-4ad8-b2f8-8709affaf50c"
+    },
+    {
+      "id": "_097e7c8e-5bda-49b3-8900-d21259b27e57",
+      "name": "Funds Received",
+      "type": "endEvent",
+      "processId": "process_53f6aad0-c43d-4dbb-a39f-6c141af2f621"
+    },
+    {
+      "id": "_de2f0392-8d49-4760-9f5d-2bf6335eb053",
+      "name": "Credit Notice",
+      "type": "startEvent",
+      "processId": "process_53f6aad0-c43d-4dbb-a39f-6c141af2f621"
+    },
+    {
+      "id": "_01ebab65-4bf7-4176-91bb-659b12ce3db7",
+      "name": "Net Work Done",
+      "type": "endEvent",
+      "processId": "process_a4e8a613-e32d-41cb-b9b7-cface420a580"
+    },
+    {
+      "id": "_33bd14d9-8fe2-4d1e-a842-d728436d93ca",
+      "name": "FX Net Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_a4e8a613-e32d-41cb-b9b7-cface420a580"
+    },
+    {
+      "id": "_8e17c3c1-254d-4d22-aeea-002daa707c02",
+      "name": "FX Net Order",
+      "type": "startEvent",
+      "processId": "process_a4e8a613-e32d-41cb-b9b7-cface420a580"
+    },
+    {
+      "id": "_1efbf428-6774-48cf-9696-ad4f091ca7f4",
+      "name": "Send Payment",
+      "type": "intermediateThrowEvent",
+      "processId": "process_a7bbe936-38a9-43fd-95c6-d9bad91276b6"
+    },
+    {
+      "id": "_29217533-81c8-4cc7-ba14-0c9764c869f1",
+      "name": "Request Closed",
+      "type": "endEvent",
+      "processId": "process_a7bbe936-38a9-43fd-95c6-d9bad91276b6"
+    },
+    {
+      "id": "_b95225dc-fa1b-4364-a078-9ac04454cb3d",
+      "name": "Bank Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_a7bbe936-38a9-43fd-95c6-d9bad91276b6"
+    },
+    {
+      "id": "_df8ddfe2-7793-4eb3-8b08-a0651fb0b3d6",
+      "name": "Payment Needed",
+      "type": "startEvent",
+      "processId": "process_a7bbe936-38a9-43fd-95c6-d9bad91276b6"
+    },
+    {
+      "id": "_2b781887-412e-4a11-a9c1-7d40746b7fde",
+      "name": "Net Work Done",
+      "type": "endEvent",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_48efbba1-bc6c-42e6-9352-a02baaba5a20",
+      "name": "Funding Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_714ab145-bf87-4380-a7c0-7768ec7cf77b",
+      "name": "GH Net Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_886d947f-f4cd-4022-802e-83504c10a575",
+      "name": "Funding Order",
+      "type": "startEvent",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_a281e0d4-a050-45b4-8d9b-68ab3feb0fa7",
+      "name": "GH Net Order",
+      "type": "startEvent",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_d41d489a-0e2b-4a1c-a7cb-f68288e14aac",
+      "name": "Funding Checked",
+      "type": "endEvent",
+      "processId": "process_afe5e0a9-60ca-46a9-82ae-1246cb08493c"
+    },
+    {
+      "id": "_160ae098-9926-4e7f-97f1-ec38bf60c3c7",
+      "name": "Recheck Due",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_1fa62e96-b4ed-4ebf-bafe-534004e0b52c",
+      "name": "Net Work Done",
+      "type": "endEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_23c979ba-22e9-4772-a6ed-e967b269b1ee",
+      "name": "Payment In",
+      "type": "startEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_289806e7-efa3-4e81-b97a-48386a264ee2",
+      "name": "Query Credit",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_36b99fcd-ac6c-471e-8cb5-87d9469e9363",
+      "name": "NG Balance",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_3de4de62-d39a-4116-92b3-4b8db9b7923e",
+      "name": "Send NG Report",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_42e83ed7-3d50-4a77-aafa-0debc309c453",
+      "name": "Send Credit",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_44034bc1-b080-43f0-8c67-d10faf7d1a75",
+      "name": "Settle Timeout",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_477075d5-c82a-40ec-8de4-584f37921096",
+      "name": "Funding Logged",
+      "type": "endEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_4c4578b4-b078-4453-a54e-34a9ffa3be7e",
+      "name": "NG Funding",
+      "type": "startEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_51d002be-d1b4-4726-b77c-fb4afb008f1c",
+      "name": "Send GH Report",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_52cc83bb-ac09-475b-87eb-a169b7d1766f",
+      "name": "Cycle Started",
+      "type": "startEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_59941d67-ef09-4763-8c06-831f49468a37",
+      "name": "Send GH Net",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_658efd76-a94a-4577-bec3-576712d78045",
+      "name": "Payment Result",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_67ea533d-3fbe-4ef2-8a1c-d35e6192ebbb",
+      "name": "FX Net Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_6f0a1850-96f5-4577-8598-c71a4b52957e",
+      "name": "Credit Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_71426489-f351-4d92-b9da-1f51f9c6ae20",
+      "name": "Funding Logged",
+      "type": "endEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_7ff19049-28a7-470d-8559-e4aca6357b5c",
+      "name": "NG Net Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_967fd590-f5e3-4f09-9ba0-7921a3ce160f",
+      "name": "Funding Timeout",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_968d8a17-a7e7-4f1a-9fd3-aab624a45f72",
+      "name": "Cycle Pending",
+      "type": "endEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_99fd3d2a-a6d5-4b3e-8557-33c02e4c6690",
+      "name": "Funds Available",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_ae5f6e17-8999-4dce-a75a-25e108ed6300",
+      "name": "Already Running",
+      "type": "endEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_bd3cc06b-4aa5-490e-8e0c-4ae2bc1e7e17",
+      "name": "Credit Timeout",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_c5502929-1f1b-4176-abf4-d5306998bb57",
+      "name": "Cycle Closed",
+      "type": "endEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_d8f3e5ed-f7bd-4ba5-a826-27d56e8a48fd",
+      "name": "Payment Closed",
+      "type": "endEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_dbc1912e-9f2a-421c-9344-d2ded0e8b377",
+      "name": "GH Balance",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_dd55a062-09a4-4e69-95ff-6ee27e4eb4ae",
+      "name": "Day Cutoff",
+      "type": "startEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_e5291063-7a0a-4d4e-94b4-959264ed59c6",
+      "name": "GH Funding",
+      "type": "startEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_eac4c053-4113-46ac-bbb0-9f579158ea86",
+      "name": "GH Net Result",
+      "type": "intermediateCatchEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_eed04366-0e78-4d64-868d-594ec82172e5",
+      "name": "Send FX Net",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_f4fffe69-9bcc-45ee-8eb3-099536f6bea8",
+      "name": "Send NG Net",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_fc3fc7da-6018-4112-81c7-bfa05da60f1b",
+      "name": "Request Top-up",
+      "type": "intermediateThrowEvent",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    }
+  ],
+  "gateways": [
+    {
+      "id": "_2e2dec7a-7eea-478c-ae99-bd7fb615a544",
+      "name": "Funding Allowed?",
+      "type": "exclusiveGateway",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_3376b82c-63f4-4617-a19b-7e638ee0c2ae",
+      "name": "Result Ready",
+      "type": "exclusiveGateway",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_4df2463b-203b-42bb-babb-d12f04daefb7",
+      "name": "Funding Source",
+      "type": "exclusiveGateway",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_90a3f721-9a16-4b1f-8a62-9e7287baa5fe",
+      "name": "Request ok?",
+      "type": "exclusiveGateway",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_d0a0973f-f9ab-46cc-8682-c2a207b468cb",
+      "name": "Sponsored?",
+      "type": "exclusiveGateway",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_dcf9eab3-6eca-450b-bff0-f586863e0e97",
+      "name": "Credited?",
+      "type": "exclusiveGateway",
+      "processId": "process_07baf4af-c413-4b31-9b45-70409baa01dd"
+    },
+    {
+      "id": "_a9569c01-e3a1-41b8-81ca-ad01b0da5f8d",
+      "name": "Reply Ready",
+      "type": "exclusiveGateway",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_b3ace603-c6ea-4bb8-8249-83a4db1fb3b5",
+      "name": "Credit Route?",
+      "type": "exclusiveGateway",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_d8d8ece5-8d4c-4eef-8fa3-3d52e016b506",
+      "name": "Top-up Needed?",
+      "type": "exclusiveGateway",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_d960b23e-8788-47d1-811e-68c72eaada6e",
+      "name": "New Credit?",
+      "type": "exclusiveGateway",
+      "processId": "process_4199db68-2d0f-4b80-8daf-56a761c60b8a"
+    },
+    {
+      "id": "_02da5c10-4a6c-4482-9944-6c4617a6b47b",
+      "name": "Credit Status?",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_0a7c46af-cb9d-4149-95db-32635460204e",
+      "name": "Report Ready",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_14704c78-9b8a-461d-9887-5c58643e28e9",
+      "name": "Start RTGS",
+      "type": "parallelGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_295cd86a-f946-4a25-977f-dece753d97f8",
+      "name": "RTGS Results",
+      "type": "parallelGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_3d5df1d4-bbb9-4c4c-9ade-99c348e6d37e",
+      "name": "Ready?",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_42d9eeec-d035-4a31-97d3-c13b4b5d292f",
+      "name": "Cycle Matched?",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_4ff42968-9c92-4fb3-b2dd-26a8e31c6854",
+      "name": "Cycle Settled?",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_8b6af2ad-a2ad-4b28-b1aa-470e4146423c",
+      "name": "RTGS Matched?",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_a97a1c8e-42d1-46e8-9de7-2c9c78b7ac38",
+      "name": "Wait Credit",
+      "type": "eventBasedGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_aae58321-ec36-480e-83da-32c360dda699",
+      "name": "Wait Funds",
+      "type": "eventBasedGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_c38aeac4-e710-42ab-9327-180930362275",
+      "name": "Payment Route?",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_c6760113-cda4-47e7-8f1e-0bb7af5d3ced",
+      "name": "Cycle Closed?",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    },
+    {
+      "id": "_f5865f69-1d4f-4c2d-bfaa-779ad66120eb",
+      "name": "Result Ready",
+      "type": "exclusiveGateway",
+      "processId": "process_ec5fd421-5e7f-4163-b867-c1c4c42ed533"
+    }
+  ],
+  "sequenceFlowsCount": 143
+}

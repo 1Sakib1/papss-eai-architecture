@@ -1,0 +1,1189 @@
+[
+  {
+    "type": "paragraph",
+    "text": "Task 2: Web Service Design"
+  },
+  {
+    "type": "paragraph",
+    "text": "Nov 2, 2026 · @Sakib"
+  },
+  {
+    "type": "paragraph",
+    "text": "Six SOAP/WSDL service operations carrying ISO 20022 payloads move a PAPSS cross-border payment from customer submission to end-of-day net settlement. Each is specified below with its purpose, its input and output fields, and the fault path that holds, retries or escalates the payment when it fails."
+  },
+  {
+    "type": "paragraph",
+    "text": "Design approach and service inventory"
+  },
+  {
+    "type": "paragraph",
+    "text": "Every inter-institution operation is exposed as a SOAP 1.2 service with a WSDL 1.1 contract and an ISO 20022 XML payload; only the corporate channels (Roffi Trading Ltd and Legos Corp) use REST/JSON. This follows the service-oriented principle of a standardised, formally described contract between loosely coupled participants (Erl, 2005)."
+  },
+  {
+    "type": "paragraph",
+    "text": "ISO 20022 is already the message standard PAPSS, the participating central bank RTGS systems and Afreximbank exchange, so a single canonical payload lets the Data Transformation component map each bank's proprietary core-banking format once, at the edge, instead of translating pairwise between participants (ISO 20022 Registration Authority, n.d.). WSDL then gives each participant a machine-readable contract to generate a client from, and its explicit <fault> declarations make the error contract part of the interface rather than an undocumented status code."
+  },
+  {
+    "type": "paragraph",
+    "text": "Four quality requirements drive the remaining choices:"
+  },
+  {
+    "type": "paragraph",
+    "text": "Integrity. XML Schema validation at the API Gateway (the schemas in Task 3) rejects malformed instructions before they reach orchestration."
+  },
+  {
+    "type": "paragraph",
+    "text": "Non-repudiation. WS-Security with an X.509 signature over mutual TLS binds each instruction to the submitting bank, which a payment order requires legally."
+  },
+  {
+    "type": "paragraph",
+    "text": "Exactly-once delivery. WS-ReliableMessaging across the Message Broker/ESB ensures a retried instruction is never applied as a second debit; the UETR in paymentId is the idempotency key."
+  },
+  {
+    "type": "paragraph",
+    "text": "Long-running coordination. BPEL (OASIS, 2007) in the Workflow Management lane orchestrates the parallel RTGS legs, the timer-driven waits and the compensation paths that a single request/response call cannot express."
+  },
+  {
+    "type": "paragraph",
+    "text": "REST/JSON is confined to the corporate hops because those carry no settlement-finality obligation and benefit from lighter, mobile-friendly payloads."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Ref",
+        "Operation",
+        "Provider (EAI component)",
+        "Consumer",
+        "BPMN message flow",
+        "ISO 20022"
+      ],
+      [
+        "WS-01",
+        "SubmitPaymentInstruction",
+        "API Gateway → Workflow Management",
+        "Ecobank Ghana (originator bank)",
+        "Payment instruction",
+        "pacs.008 → pacs.002"
+      ],
+      [
+        "WS-02",
+        "ValidatePaymentInstruction",
+        "Payment Validation + Compliance & Sanctions Screening",
+        "Workflow Management (BPEL invoke)",
+        "internal to  Check Payment",
+        "pacs.002 status"
+      ],
+      [
+        "WS-03",
+        "ConfirmBeneficiaryCredit",
+        "Alt Bank Nigeria bank adapter",
+        "Settlement Orchestration",
+        "NGN credit instruction, Credit result, Credit status query",
+        "pacs.008 → pacs.002"
+      ],
+      [
+        "WS-04",
+        "UpdatePreFundingPosition",
+        "Pre-Funding Management",
+        "Participant treasury, RTGS adapters",
+        "GHS and NGN funding orders, funding results, balance results",
+        "pacs.009, camt.054, camt.052"
+      ],
+      [
+        "WS-05",
+        "SubmitNetSettlementInstruction",
+        "Settlement Orchestration + Audit & Reconciliation",
+        "Bank of Ghana RTGS, CBN RTGS, Afreximbank",
+        "GH/NG/FX net instruction and results, settlement reports",
+        "pacs.009, camt.053"
+      ],
+      [
+        "WS-06",
+        "NotifyPaymentStatus",
+        "Error Handling & Notifications",
+        "Originator bank, beneficiary bank, corporates",
+        "Final payment result, Beneficiary credit notice, Customer result",
+        "pacs.002, camt.054"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Message transformation mapping"
+  },
+  {
+    "type": "paragraph",
+    "text": "The Data Transformation component converts each participant's proprietary core-banking format into one canonical ISO 20022 payload at the edge of the hub, so no participant ever has to understand another participant's format."
+  },
+  {
+    "type": "paragraph",
+    "text": "This is what makes the hub worth building. Connecting participants point to point needs up to n(n − 1) mappings; routing them through a canonical model needs n — one adapter each. Admitting a seventh central bank to PAPSS therefore adds one adapter rather than six new pairwise mappings, and no existing participant's contract changes (Hohpe & Woolf, 2004)."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Ecobank Ghana core-banking field",
+        "Canonical ISO 20022 element (pacs.008)",
+        "WS-01 field",
+        "Transformation rule"
+      ],
+      [
+        "TXN_REF  (char 16)",
+        "CdtTrfTxInf/PmtId/EndToEndId",
+        "paymentId",
+        "Adapter generates the UETR and stores the pairing, so the bank can still trace by its own reference"
+      ],
+      [
+        "SND_BRANCH  +  SND_ACCT  (char 4 + char 10)",
+        "Dbtr/Acct/Id/Othr/Id",
+        "originatorAccount",
+        "Concatenate branch and account, left-pad to 14 digits"
+      ],
+      [
+        "SND_NAME  (char 35)",
+        "Dbtr/Nm",
+        "originatorName",
+        "Pad to the 140-character ISO limit; strip non-Latin characters"
+      ],
+      [
+        "BEN_BANK  (local sort code, char 6)",
+        "CdtrAgt/FinInstnId/BICFI",
+        "beneficiaryBankId",
+        "Look up the BIC in the PAPSS participant register; fail the mapping if absent"
+      ],
+      [
+        "AMT  (packed decimal) +  CCY  (char 3)",
+        "IntrBkSttlmAmt  with  Ccy  attribute",
+        "instructedAmount",
+        "Convert to decimal(18,2); reject if the currency is not a registered settlement currency"
+      ],
+      [
+        "VAL_DT  (YYYYMMDD)",
+        "IntrBkSttlmDt",
+        "requestedExecutionDate",
+        "Reformat to  xsd:date  (YYYY-MM-DD)"
+      ],
+      [
+        "PURP  (internal 2-char code)",
+        "Purp/Cd",
+        "purposeCode",
+        "Lookup table to ExternalPurpose1Code"
+      ],
+      [
+        "CHG_IND  (D / C / S)",
+        "ChrgBr",
+        "chargeBearer",
+        "D → DEBT, C → CRED, S → SHAR"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "The reverse mapping runs at the beneficiary side for WS-03: canonical CdtTrfTxInf elements become Alt Bank Nigeria's NUBAN posting record, and the posting result is mapped back into the TxSts element of a pacs.002. Both directions live in that bank's adapter, so a change to one participant's core-banking release touches only its own adapter and leaves every other contract untouched."
+  },
+  {
+    "type": "paragraph",
+    "text": "Every transformed message is validated against its XSD (Task 3) at the API Gateway before it enters the ESB, so a mapping defect is caught at the boundary rather than surfacing deep inside the orchestration."
+  },
+  {
+    "type": "paragraph",
+    "text": "Payment execution services"
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-01 SubmitPaymentInstruction"
+  },
+  {
+    "type": "paragraph",
+    "text": "Purpose. The entry point for a cross-border credit transfer. Ecobank Ghana submits a signed instruction on behalf of Roffi Trading Ltd; PAPSS validates the schema, assigns a clearing reference and admits the instruction to orchestration. This realises the Payment instruction flow from Ecobank's Submit Payment throw event to the PAPSS Payment In start event. The reply is a synchronous acknowledgement only — the final outcome returns asynchronously through WS-06, because beneficiary credit and settlement take longer than a request/response call can hold open."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Input field",
+        "Type",
+        "M/O",
+        "Notes"
+      ],
+      [
+        "paymentId",
+        "UUID (UETR)",
+        "M",
+        "End-to-end identifier; also the idempotency key"
+      ],
+      [
+        "originatorBankId",
+        "BIC (8 or 11)",
+        "M",
+        "Submitting bank"
+      ],
+      [
+        "beneficiaryBankId",
+        "BIC",
+        "M",
+        "Routing target"
+      ],
+      [
+        "originatorName",
+        "string(140)",
+        "M",
+        ""
+      ],
+      [
+        "originatorAccount",
+        "string(34)",
+        "M",
+        ""
+      ],
+      [
+        "beneficiaryName",
+        "string(140)",
+        "M",
+        "Screened by WS-02"
+      ],
+      [
+        "beneficiaryAccount",
+        "string(34)",
+        "M",
+        "NUBAN for Nigeria"
+      ],
+      [
+        "instructedAmount",
+        "decimal(18,2) with  Ccy  attribute",
+        "M",
+        "e.g. 250000.00 GHS"
+      ],
+      [
+        "settlementCurrency",
+        "ISO 4217",
+        "M",
+        "NGN"
+      ],
+      [
+        "fxQuoteRef",
+        "string(35)",
+        "O",
+        "References the FX Quote data object"
+      ],
+      [
+        "purposeCode",
+        "ExternalPurpose1Code",
+        "M",
+        "e.g. GDDS for goods"
+      ],
+      [
+        "requestedExecutionDate",
+        "date",
+        "M",
+        ""
+      ],
+      [
+        "chargeBearer",
+        "enum DEBT / CRED / SHAR",
+        "M",
+        ""
+      ],
+      [
+        "remittanceInformation",
+        "string(140)",
+        "O",
+        "Invoice reference"
+      ],
+      [
+        "digitalSignature",
+        "ds:Signature",
+        "M",
+        "WS-Security X.509"
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Output field",
+        "Type",
+        "Notes"
+      ],
+      [
+        "paymentId",
+        "UUID",
+        "Echoed"
+      ],
+      [
+        "clearingReference",
+        "string(35)",
+        "PAPSS-assigned, e.g. PAPSS-2026-GH-0001234"
+      ],
+      [
+        "acceptanceStatus",
+        "enum ACTC / RJCT / PDNG",
+        "ACTC = accepted after technical validation"
+      ],
+      [
+        "validationStatus",
+        "enum PASS / PENDING / FAIL",
+        "PENDING while WS-02 runs"
+      ],
+      [
+        "receivedTimestamp",
+        "dateTime (UTC)",
+        "Normalises GMT and WAT clocks"
+      ],
+      [
+        "rejectReasonCode",
+        "ExternalStatusReason1Code",
+        "Present only when RJCT"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Declared faults: DuplicatePaymentInstruction, InvalidAccountDetails, SchemaValidationFault."
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-02 ValidatePaymentInstruction"
+  },
+  {
+    "type": "paragraph",
+    "text": "Purpose. A composite operation the BPEL process invokes at the Check Payment task. It runs format and account validation in the Payment Validation component and sanctions/AML screening in Compliance & Sanctions Screening against UN, OFAC and regional lists, returning one decision that drives the Payment Route? gateway. Keeping it separate from WS-01 means screening can be re-run after a watch-list update without the originator re-submitting the payment."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Input field",
+        "Type",
+        "M/O",
+        "Notes"
+      ],
+      [
+        "paymentId",
+        "UUID",
+        "M",
+        ""
+      ],
+      [
+        "clearingReference",
+        "string(35)",
+        "M",
+        ""
+      ],
+      [
+        "originatorName",
+        "string(140)",
+        "M",
+        ""
+      ],
+      [
+        "originatorCountry",
+        "ISO 3166 alpha-2",
+        "M",
+        "GH"
+      ],
+      [
+        "beneficiaryName",
+        "string(140)",
+        "M",
+        ""
+      ],
+      [
+        "beneficiaryCountry",
+        "ISO 3166 alpha-2",
+        "M",
+        "NG"
+      ],
+      [
+        "beneficiaryAccount",
+        "string(34)",
+        "M",
+        "Format and check-digit validation"
+      ],
+      [
+        "beneficiaryBankId",
+        "BIC",
+        "M",
+        "Checked against the participant register"
+      ],
+      [
+        "amount",
+        "decimal(18,2) with  Ccy",
+        "M",
+        "Threshold rules apply"
+      ],
+      [
+        "purposeCode",
+        "ExternalPurpose1Code",
+        "M",
+        ""
+      ],
+      [
+        "screeningProfile",
+        "enum STANDARD / ENHANCED",
+        "M",
+        "ENHANCED for high-value or high-risk corridors"
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Output field",
+        "Type",
+        "Notes"
+      ],
+      [
+        "paymentId",
+        "UUID",
+        ""
+      ],
+      [
+        "validationStatus",
+        "enum PASS / FAIL",
+        "Format and account outcome"
+      ],
+      [
+        "complianceStatus",
+        "enum CLEAR / HIT / REVIEW",
+        "Screening outcome"
+      ],
+      [
+        "sanctionsMatchScore",
+        "integer 0–100",
+        "Fuzzy-match confidence"
+      ],
+      [
+        "matchedListRef",
+        "string(35)",
+        "Present only when HIT"
+      ],
+      [
+        "screeningReference",
+        "string(35)",
+        "Audit key written to Audit & Reconciliation"
+      ],
+      [
+        "rejectReasonCode",
+        "ExternalStatusReason1Code",
+        ""
+      ],
+      [
+        "decisionTimestamp",
+        "dateTime (UTC)",
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Declared faults: FailedSanctionsCheck, SanctionsScreeningUnavailable, PAPSSValidationTimeout."
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-03 ConfirmBeneficiaryCredit"
+  },
+  {
+    "type": "paragraph",
+    "text": "Purpose. PAPSS instructs Alt Bank Nigeria to credit Legos Corp in local currency and to confirm that the credit posted. It realises the NGN credit instruction flow into Alt Bank's Credit Request start event and the Credit result flow back to PAPSS. A companion GetCreditStatus operation on the same port type serves the Credit status query flow, which the Wait Credit event-based gateway issues when the Credit Timeout timer fires — so a lost confirmation is resolved by asking, not by re-sending the credit."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Input field",
+        "Type",
+        "M/O",
+        "Notes"
+      ],
+      [
+        "paymentId",
+        "UUID",
+        "M",
+        "Idempotency key at the beneficiary bank"
+      ],
+      [
+        "clearingReference",
+        "string(35)",
+        "M",
+        "PAPSS clearing reference"
+      ],
+      [
+        "beneficiaryAccount",
+        "string(34)",
+        "M",
+        "NUBAN"
+      ],
+      [
+        "beneficiaryName",
+        "string(140)",
+        "M",
+        "Matched against account holder"
+      ],
+      [
+        "creditCurrency",
+        "ISO 4217",
+        "M",
+        "NGN"
+      ],
+      [
+        "creditAmount",
+        "decimal(18,2)",
+        "M",
+        "Post-conversion amount"
+      ],
+      [
+        "fxRate",
+        "decimal(11,6)",
+        "M",
+        "Rate applied, for customer disclosure"
+      ],
+      [
+        "valueDate",
+        "date",
+        "M",
+        ""
+      ],
+      [
+        "originatorBankId",
+        "BIC",
+        "M",
+        "Shown on the credit notice"
+      ],
+      [
+        "remittanceInformation",
+        "string(140)",
+        "O",
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Output field",
+        "Type",
+        "Notes"
+      ],
+      [
+        "paymentId",
+        "UUID",
+        ""
+      ],
+      [
+        "creditStatus",
+        "enum ACSC / RJCT / PDNG",
+        "ACSC = accepted, settlement completed"
+      ],
+      [
+        "confirmationReference",
+        "string(35)",
+        "Beneficiary bank's posting reference"
+      ],
+      [
+        "creditedAmount",
+        "decimal(18,2)",
+        "Confirms the amount actually posted"
+      ],
+      [
+        "creditTimestamp",
+        "dateTime (UTC)",
+        ""
+      ],
+      [
+        "reasonCode",
+        "ExternalStatusReason1Code",
+        "Present only when RJCT"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Companion operation — GetCreditStatus. Takes paymentId and clearingReference, and returns creditStatus, confirmationReference, creditedAmount and lastUpdatedTimestamp. It is read-only and idempotent, so the hub can poll it safely when a confirmation is lost, with no risk of instructing a second credit."
+  },
+  {
+    "type": "paragraph",
+    "text": "Declared faults: InvalidAccountDetails, BeneficiaryBankUnavailable, CreditConfirmationTimeout."
+  },
+  {
+    "type": "paragraph",
+    "text": "Liquidity and settlement services"
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-04 UpdatePreFundingPosition"
+  },
+  {
+    "type": "paragraph",
+    "text": "Purpose. Maintains each participant's pre-funded clearing balance per currency — the control that guarantees PAPSS clears a payment only against funds already held. The orchestration invokes it at three points: when a central bank RTGS confirms a funding order (GH funding result and NG funding result into Record Funding), when funds are earmarked for a payment (Check Funds), and when a balance enquiry is answered (GH balance result, NG balance result). A sponsored indirect participant holds no position of its own, so sponsorId directs the movement to the sponsoring direct participant's balance — this is how the Sponsored funding request flow settles."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Input field",
+        "Type",
+        "M/O",
+        "Notes"
+      ],
+      [
+        "participantId",
+        "BIC",
+        "M",
+        "Direct participant whose position moves"
+      ],
+      [
+        "sponsorId",
+        "BIC",
+        "O",
+        "Present when the movement originates from a sponsored indirect participant"
+      ],
+      [
+        "settlementCurrency",
+        "ISO 4217",
+        "M",
+        "GHS or NGN"
+      ],
+      [
+        "movementType",
+        "enum CREDIT / DEBIT / RESERVE / RELEASE",
+        "M",
+        "RESERVE earmarks funds; RELEASE unwinds a failed payment"
+      ],
+      [
+        "amount",
+        "decimal(18,2)",
+        "M",
+        ""
+      ],
+      [
+        "fundingOrderId",
+        "string(35)",
+        "O",
+        "Present for a CREDIT from an RTGS funding order"
+      ],
+      [
+        "rtgsReference",
+        "string(35)",
+        "O",
+        "Central bank confirmation reference"
+      ],
+      [
+        "rtgsSystemId",
+        "enum BOG-RTGS / CBN-RTGS",
+        "O",
+        "Source RTGS system"
+      ],
+      [
+        "relatedPaymentId",
+        "UUID",
+        "O",
+        "Present for RESERVE and RELEASE"
+      ],
+      [
+        "valueDate",
+        "date",
+        "M",
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Output field",
+        "Type",
+        "Notes"
+      ],
+      [
+        "participantId",
+        "BIC",
+        ""
+      ],
+      [
+        "settlementCurrency",
+        "ISO 4217",
+        ""
+      ],
+      [
+        "clearingBalance",
+        "decimal(18,2)",
+        "Total pre-funded balance"
+      ],
+      [
+        "availableBalance",
+        "decimal(18,2)",
+        "Clearing balance less reservations"
+      ],
+      [
+        "reservedAmount",
+        "decimal(18,2)",
+        "Earmarked against in-flight payments"
+      ],
+      [
+        "lastMovementId",
+        "string(35)",
+        "Ledger entry written to Audit & Reconciliation"
+      ],
+      [
+        "movementStatus",
+        "enum APPLIED / REJECTED",
+        ""
+      ],
+      [
+        "thresholdBreachFlag",
+        "boolean",
+        "True when the balance falls below the agreed floor, triggering  Request Top-up"
+      ],
+      [
+        "positionTimestamp",
+        "dateTime (UTC)",
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Declared faults: InsufficientPreFunding, RTGSConfirmationFailure, PositionLocked."
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-05 SubmitNetSettlementInstruction"
+  },
+  {
+    "type": "paragraph",
+    "text": "Purpose. At the Day Cutoff timer, Settlement Orchestration computes multilateral net positions (Calculate Net) and issues settlement instructions on three legs in parallel — Bank of Ghana RTGS, Central Bank of Nigeria RTGS, and Afreximbank for the hard-currency leg — then reconciles the three confirmations at the RTGS Results join before the RTGS Matched? gateway. One operation serves all three legs; rtgsSystemId selects the endpoint, which keeps the contract stable as PAPSS admits further central banks."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Input field",
+        "Type",
+        "M/O",
+        "Notes"
+      ],
+      [
+        "cycleId",
+        "string(35)",
+        "M",
+        "e.g. PAPSS-CYCLE-2026-10-15"
+      ],
+      [
+        "settlementDate",
+        "date",
+        "M",
+        ""
+      ],
+      [
+        "rtgsSystemId",
+        "enum BOG-RTGS / CBN-RTGS / AFREXIM",
+        "M",
+        "Selects the settlement leg"
+      ],
+      [
+        "cycleCurrency",
+        "ISO 4217",
+        "M",
+        "GHS, NGN or USD"
+      ],
+      [
+        "participantPositions",
+        "complex, 1..n",
+        "M",
+        "Repeating group:  participantId ,  grossDebits ,  grossCredits ,  netAmount"
+      ],
+      [
+        "totalNetAmount",
+        "decimal(18,2)",
+        "M",
+        "Sum of  netAmount ; must net to zero across the cycle"
+      ],
+      [
+        "instructionTimestamp",
+        "dateTime (UTC)",
+        "M",
+        ""
+      ],
+      [
+        "authorisationSignature",
+        "ds:Signature",
+        "M",
+        "Dual-control signature from PAPSS settlement operations"
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Output field",
+        "Type",
+        "Notes"
+      ],
+      [
+        "cycleId",
+        "string(35)",
+        ""
+      ],
+      [
+        "rtgsSystemId",
+        "enum",
+        "Leg being confirmed"
+      ],
+      [
+        "settlementStatus",
+        "enum SETTLED / PARTIAL / EXCEPTION / PENDING",
+        "Drives  Cycle Matched?"
+      ],
+      [
+        "rtgsConfirmationRef",
+        "string(35)",
+        "Central bank posting reference"
+      ],
+      [
+        "settledAmount",
+        "decimal(18,2)",
+        ""
+      ],
+      [
+        "settledTimestamp",
+        "dateTime (UTC)",
+        ""
+      ],
+      [
+        "mismatchDetails",
+        "complex, 0..n",
+        "participantId ,  expectedAmount ,  confirmedAmount ,  variance"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Declared faults: SettlementMismatch, RTGSConfirmationFailure, CycleAlreadySettled."
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-06 NotifyPaymentStatus"
+  },
+  {
+    "type": "paragraph",
+    "text": "Purpose. One outbound notification service in Error Handling & Notifications, serving every result the process pushes outward: the Final payment result to Ecobank Ghana, the Customer result to Roffi Trading Ltd, the Beneficiary credit notice to Legos Corp, the GH and NG settlement reports to both banks, and the Top-up request raised when pre-funding runs short. Centralising them means delivery retry, channel selection and audit logging are built once rather than in each calling component."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Input field",
+        "Type",
+        "M/O",
+        "Notes"
+      ],
+      [
+        "notificationType",
+        "enum PAYMENT_RESULT / CREDIT_NOTICE / SETTLEMENT_REPORT / TOPUP_REQUEST / EXCEPTION_ALERT",
+        "M",
+        "Selects the payload template"
+      ],
+      [
+        "paymentId",
+        "UUID",
+        "O",
+        "Present for payment-scoped notifications"
+      ],
+      [
+        "cycleId",
+        "string(35)",
+        "O",
+        "Present for settlement reports"
+      ],
+      [
+        "recipientId",
+        "BIC or customer identifier",
+        "M",
+        ""
+      ],
+      [
+        "recipientChannel",
+        "enum SOAP / REST / EMAIL",
+        "M",
+        "SOAP to banks, REST to corporates"
+      ],
+      [
+        "statusCode",
+        "ExternalPaymentTransactionStatus",
+        "M",
+        "e.g. ACSC, RJCT, PDNG"
+      ],
+      [
+        "reasonCode",
+        "ExternalStatusReason1Code",
+        "O",
+        "Present when the status is negative"
+      ],
+      [
+        "confirmationReference",
+        "string(35)",
+        "O",
+        ""
+      ],
+      [
+        "amount",
+        "decimal(18,2) with  Ccy",
+        "O",
+        ""
+      ],
+      [
+        "messageTimestamp",
+        "dateTime (UTC)",
+        "M",
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Output field",
+        "Type",
+        "Notes"
+      ],
+      [
+        "notificationId",
+        "string(35)",
+        ""
+      ],
+      [
+        "deliveryStatus",
+        "enum DELIVERED / QUEUED / FAILED",
+        "QUEUED when the recipient is unreachable"
+      ],
+      [
+        "deliveryTimestamp",
+        "dateTime (UTC)",
+        ""
+      ],
+      [
+        "retryCount",
+        "integer",
+        "Incremented by the ESB on each redelivery"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Declared faults: RecipientUnavailable."
+  },
+  {
+    "type": "paragraph",
+    "text": "WSDL interface definition"
+  },
+  {
+    "type": "paragraph",
+    "text": "The contract below defines WS-01, written to WSDL 1.1 (Christensen et al., 2001) and bound to SOAP 1.2 (W3C, 2007). Two things in it carry the design: <types> imports the Payment Instruction schema rather than redefining it, so the WSDL and the XSD in Task 3 cannot drift apart; and each business fault is declared as a named <fault> on the operation, so a participant bank generates handling code for the failure paths at the same time as the success path."
+  },
+  {
+    "type": "paragraph",
+    "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><definitions name=\"PaymentInstructionService\"             targetNamespace=\"http://papss.org/wsdl/payment\"             xmlns=\"http://schemas.xmlsoap.org/wsdl/\"             xmlns:tns=\"http://papss.org/wsdl/payment\"             xmlns:pay=\"http://papss.org/schema/payment/v1\"             xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"             xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">  <!-- Types imported from the Task 3 schema, not redefined here -->  <types>    <xsd:schema targetNamespace=\"http://papss.org/schema/payment/v1\">      <xsd:import namespace=\"http://papss.org/schema/payment/v1\"                  schemaLocation=\"PaymentInstruction.xsd\"/>    </xsd:schema>  </types>  <message name=\"SubmitPaymentRequest\">    <part name=\"body\" element=\"pay:PaymentInstruction\"/>  </message>  <message name=\"SubmitPaymentResponse\">    <part name=\"body\" element=\"pay:PaymentAcknowledgement\"/>  </message>  <message name=\"PaymentFaultMessage\">    <part name=\"body\" element=\"pay:PaymentFault\"/>  </message>  <portType name=\"PaymentInstructionPortType\">    <operation name=\"SubmitPaymentInstruction\">      <input   message=\"tns:SubmitPaymentRequest\"/>      <output  message=\"tns:SubmitPaymentResponse\"/>      <fault name=\"InvalidAccountDetails\"       message=\"tns:PaymentFaultMessage\"/>      <fault name=\"DuplicatePaymentInstruction\" message=\"tns:PaymentFaultMessage\"/>      <fault name=\"SchemaValidationFault\"       message=\"tns:PaymentFaultMessage\"/>    </operation>  </portType>  <binding name=\"PaymentInstructionSOAPBinding\"           type=\"tns:PaymentInstructionPortType\">    <soap:binding style=\"document\"                  transport=\"http://schemas.xmlsoap.org/soap/http\"/>    <operation name=\"SubmitPaymentInstruction\">      <soap:operation soapAction=\"http://papss.org/payment/Submit\"/>      <input><soap:body use=\"literal\"/></input>      <output><soap:body use=\"literal\"/></output>      <fault name=\"InvalidAccountDetails\">        <soap:fault name=\"InvalidAccountDetails\" use=\"literal\"/>      </fault>      <fault name=\"DuplicatePaymentInstruction\">        <soap:fault name=\"DuplicatePaymentInstruction\" use=\"literal\"/>      </fault>      <fault name=\"SchemaValidationFault\">        <soap:fault name=\"SchemaValidationFault\" use=\"literal\"/>      </fault>    </operation>  </binding>  <service name=\"PaymentInstructionService\">    <port name=\"PaymentInstructionPort\"          binding=\"tns:PaymentInstructionSOAPBinding\">      <soap:address location=\"https://api.papss.org/v1/payment\"/>    </port>  </service></definitions>"
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-02 to WS-06 follow the same pattern, each with its own port type, binding and declared faults. Grouping them as one WSDL per EAI component — payment, compliance, pre-funding, settlement, notification — lets a component be versioned and redeployed without reissuing contracts the other participants already consume."
+  },
+  {
+    "type": "paragraph",
+    "text": "Service fault handling"
+  },
+  {
+    "type": "paragraph",
+    "text": "Each declared fault maps to a detecting component and to a specific element in the BPMN model, so the exception paths drawn in Task 1 are the ones the services actually raise."
+  },
+  {
+    "type": "table",
+    "rows": [
+      [
+        "Fault",
+        "Trigger",
+        "Detected by → BPMN element",
+        "Reason code",
+        "Automatic recovery",
+        "Escalation"
+      ],
+      [
+        "InvalidAccountDetails",
+        "Beneficiary account fails format, check-digit or existence validation",
+        "Alt Bank adapter →  Check Credit",
+        "AC01 (AC04 if closed)",
+        "None — non-retryable",
+        "Reject, release reserved funds, notify originator bank and customer (WS-06) →  Set Rejected ,  Reject Payment"
+      ],
+      [
+        "InsufficientPreFunding",
+        "RESERVE exceeds available clearing balance",
+        "Pre-Funding Management →  Check Funds",
+        "AM04",
+        "Payment held, not rejected;  Request Top-up  issued; the  Funds Available  conditional event retries the reserve once the RTGS credit lands",
+        "Funding Timeout  (PT30M) →  Flag Exception ,  Open Case  for the settlement administrator"
+      ],
+      [
+        "FailedSanctionsCheck",
+        "Confirmed watch-list hit from WS-02",
+        "Compliance & Sanctions Screening →  Check Payment",
+        "Compliance hold; no code released to the sender",
+        "None — never auto-retried or auto-released",
+        "Manual compliance review, regulator notification, release-or-reject decision logged in Audit & Reconciliation"
+      ],
+      [
+        "DuplicatePaymentInstruction",
+        "Same  paymentId  (UETR) received inside the retention window",
+        "API Gateway idempotency cache →  Already Running",
+        "AM05",
+        "Original acknowledgement replayed; no second debit posted",
+        "None — logged only"
+      ],
+      [
+        "BeneficiaryBankUnavailable",
+        "Transport fault or no response from the beneficiary bank endpoint",
+        "Message Broker/ESB →  Wait Credit",
+        "Technical fault",
+        "Three ESB redeliveries with exponential backoff (30 s, 2 min, 8 min), then  GetCreditStatus  rather than re-sending the credit",
+        "Credit Timeout  →  Mark Pending ,  Flag Exception ; beneficiary bank operations notified"
+      ],
+      [
+        "PAPSSValidationTimeout",
+        "WS-02 does not respond within its SLA",
+        "Workflow Management →  Recheck Due",
+        "Technical fault",
+        "One re-invoke after the  Recheck Due  timer",
+        "Flag Exception  →  Open Case ; originator bank receives status PDNG"
+      ],
+      [
+        "RTGSConfirmationFailure",
+        "A central bank RTGS does not confirm a funding or net instruction",
+        "Settlement Orchestration →  Check RTGS",
+        "Technical fault",
+        "Status re-query; instruction redelivered from the ESB message store",
+        "Set Exception ; cycle held open; central bank operations and both participants notified"
+      ],
+      [
+        "SettlementMismatch",
+        "Confirmed net amount differs from the calculated net position",
+        "Audit & Reconciliation →  Cycle Matched?",
+        "Reconciliation break",
+        "Automatic  Reconcile  pass against the clearing ledger",
+        "Cycle Pending ; case raised to the PAPSS settlement administrator and both central banks"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "text": "Four principles hold across all eight:"
+  },
+  {
+    "type": "paragraph",
+    "text": "Business faults are not retried; technical faults are. A business fault (AC01, AM04, AM05) is returned in the SOAP <Detail> element with its reason code and resolved by a decision. A technical fault means the instruction may simply not have arrived, so the ESB redelivers it."
+  },
+  {
+    "type": "paragraph",
+    "text": "Hold rather than reject. A payment is rejected only when the defect is in the instruction itself. Liquidity and availability problems hold it, so the customer is not asked to re-submit a payment that was always valid."
+  },
+  {
+    "type": "paragraph",
+    "text": "Every reservation is compensated. Each RESERVE on WS-04 has a matching RELEASE, so a payment that fails after funds are earmarked returns them to the available balance instead of stranding liquidity."
+  },
+  {
+    "type": "paragraph",
+    "text": "Nothing is discarded silently. A message that exhausts its redeliveries moves to an ESB dead-letter queue (Hohpe & Woolf, 2004) that raises an exception case, and every fault writes to Audit & Reconciliation keyed on paymentId or cycleId, so any case is traceable end to end."
+  },
+  {
+    "type": "paragraph",
+    "text": "Example fault message and escalation path"
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-04 raises the fault below when Ecobank Ghana's reserve request for GHS 250,000.00 meets an available clearing balance of GHS 186,420.75. Values and identifiers are illustrative."
+  },
+  {
+    "type": "paragraph",
+    "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"               xmlns:pay=\"http://papss.org/schema/payment/v1\">  <soap:Body>    <soap:Fault>      <soap:Code>        <soap:Value>soap:Sender</soap:Value>        <soap:Subcode>          <soap:Value>pay:InsufficientPreFunding</soap:Value>        </soap:Subcode>      </soap:Code>      <soap:Reason>        <soap:Text xml:lang=\"en\">Available pre-funding is insufficient to          reserve the instructed amount.</soap:Text>      </soap:Reason>      <soap:Detail>        <pay:PaymentFault>          <pay:faultCode>AM04</pay:faultCode>          <pay:faultCategory>BUSINESS</pay:faultCategory>          <pay:paymentId>8f3c1b2a-77d4-4e19-9a52-0b6c1d3e4f58</pay:paymentId>          <pay:clearingReference>PAPSS-2026-GH-0001234</pay:clearingReference>          <pay:participantId>ECOCGHAC</pay:participantId>          <pay:settlementCurrency>GHS</pay:settlementCurrency>          <pay:requestedAmount>250000.00</pay:requestedAmount>          <pay:availableBalance>186420.75</pay:availableBalance>          <pay:shortfall>63579.25</pay:shortfall>          <pay:recoveryAction>HOLD_AND_REQUEST_TOPUP</pay:recoveryAction>          <pay:retryAfter>PT30M</pay:retryAfter>          <pay:escalationLevel>PARTICIPANT_TREASURY</pay:escalationLevel>          <pay:faultTimestamp>2026-10-15T09:42:17Z</pay:faultTimestamp>        </pay:PaymentFault>      </soap:Detail>    </soap:Fault>  </soap:Body></soap:Envelope>"
+  },
+  {
+    "type": "paragraph",
+    "text": "The <Detail> element carries what an automated consumer needs in order to act without a person reading the message: the exact shortfall to be funded, the recovery action to take, how long to wait before retrying, and who to escalate to. faultCategory is what tells the ESB not to redeliver — this is a business fault, and a redelivery would fail identically."
+  },
+  {
+    "type": "paragraph",
+    "text": "Recovery then runs through the model as follows."
+  },
+  {
+    "type": "paragraph",
+    "text": "Hold, do not reject. Workflow Management routes the payment to Mark Pending and returns status PDNG to Ecobank Ghana through WS-06. The customer debit is not reversed and Roffi Trading Ltd is not asked to re-submit a payment that was always valid."
+  },
+  {
+    "type": "paragraph",
+    "text": "Request the top-up. Error Handling & Notifications raises the Top-up request to Ecobank Ghana's treasury lane, carrying the shortfall of GHS 63,579.25."
+  },
+  {
+    "type": "paragraph",
+    "text": "Fund through RTGS. Ecobank Ghana sends the GHS funding order to Bank of Ghana RTGS. On the GH funding result, the Record Funding task calls WS-04 with movementType=CREDIT and the rtgsReference from the central bank."
+  },
+  {
+    "type": "paragraph",
+    "text": "Resume automatically. The increased balance fires the Funds Available conditional event at the Wait Funds gateway. Check Funds re-runs the RESERVE, it now succeeds, and the payment continues to WS-03 without any manual intervention."
+  },
+  {
+    "type": "paragraph",
+    "text": "Escalate if it does not. If the Funding Timeout of PT30M expires first, the process takes the timer path to Flag Exception and Open Case. A PAPSS settlement administrator is assigned the case, Ecobank Ghana's treasury receives an EXCEPTION_ALERT through WS-06, and the reserved amount is released so liquidity is not held against a payment that cannot complete."
+  },
+  {
+    "type": "paragraph",
+    "text": "The other seven faults follow the same shape: the fault message names its recovery action and escalation level, and a BPMN timer decides the point at which automatic recovery gives way to a person."
+  },
+  {
+    "type": "paragraph",
+    "text": "Service interaction sequence"
+  },
+  {
+    "type": "paragraph",
+    "text": "service interaction · 6 services, 6 participants"
+  },
+  {
+    "type": "paragraph",
+    "text": "WS-01 carries the instruction into the hub; WS-02 and WS-04 run inside it; WS-03 delivers the credit and returns the confirmation; WS-06 returns every result to the banks and their customers. WS-04 also moves pre-funding between each bank and its central bank RTGS, and WS-05 settles the net positions across all three legs at day cutoff."
+  },
+  {
+    "type": "paragraph",
+    "text": "References"
+  },
+  {
+    "type": "paragraph",
+    "text": "Christensen, E., Curbera, F., Meredith, G., & Weerawarana, S. (2001). Web services description language (WSDL) 1.1 [W3C Note]. World Wide Web Consortium. https://www.w3.org/TR/wsdl"
+  },
+  {
+    "type": "paragraph",
+    "text": "Erl, T. (2005). Service-oriented architecture: Concepts, technology, and design. Prentice Hall."
+  },
+  {
+    "type": "paragraph",
+    "text": "Hohpe, G., & Woolf, B. (2004). Enterprise integration patterns: Designing, building, and deploying messaging solutions. Addison-Wesley."
+  },
+  {
+    "type": "paragraph",
+    "text": "ISO 20022 Registration Authority. (n.d.). ISO 20022 universal financial industry message scheme. https://www.iso20022.org/"
+  },
+  {
+    "type": "paragraph",
+    "text": "OASIS. (2007). Web services business process execution language version 2.0 [OASIS Standard]. Organization for the Advancement of Structured Information Standards. http://docs.oasis-open.org/wsbpel/2.0/OS/wsbpel-v2.0-OS.html"
+  },
+  {
+    "type": "paragraph",
+    "text": "W3C. (2007). SOAP version 1.2 part 1: Messaging framework (2nd ed.) [W3C Recommendation]. World Wide Web Consortium. https://www.w3.org/TR/soap12-part1/"
+  }
+]
